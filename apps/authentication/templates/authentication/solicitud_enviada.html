@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlace Enviado</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+</head>
+<body>
+
+    <div class="success-box">
+        <div class="icon-container">
+            <i class="fa-solid fa-envelope-circle-check"></i>
+        </div>
+        
+        <h2>¡Solicitud Procesada!</h2>
+        
+        <p class="message-text">{{ mensaje }}</p>
+        
+        <a href="{% url 'authentication:login' %}" class="btn-login">
+            <span>Entendido, ir al Login</span>
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </a>
+    </div>
+
+</body>
+</html>

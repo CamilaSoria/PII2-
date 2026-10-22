@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="row g-4">
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 position-sticky" style="top: 20px;">
+            <div class="card-body">
+                <h2 class="h4 mb-3 pb-2 border-bottom">👤 Mi Perfil</h2>
+                <div class="text-center mb-4">
+                    {% if usuario.foto_perfil %}
+                        <img src="{{ usuario.foto_perfil.url }}" alt="Foto de {{ usuario.nombre }}" 
+                            class="rounded-circle img-thumbnail shadow"
+                            style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150x150.png?text=Sin+Foto" alt="Sin foto" 
+                            class="rounded-circle img-thumbnail shadow">
+                    {% endif %}
+                </div>
+                <p class="mb-1"><strong>Usuario:</strong> {{ usuario.username }}</p> 
+                <p class="text-muted mb-3"><strong>Email:</strong> {{ usuario.email }}</p>
+                
+                <button type="button" class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#modalEditar">
+                    ✏️ Editar Mis Datos
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#modalHistorial">
+                    🗺️ Ver Historial de Viajes
+                </button>
+
+                <a href="{% url 'authentication:mis_joyas_ocultas' %}" class="btn btn-outline-success w-100 mb-3">
+                    💎 Mis Joyas Ocultas Propuestas
+                </a>
+
+                <form action="{% url 'authentication:logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        🚪 Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'authentication/modales/modal_editar_perfil.html' %}
+{% include 'authentication/modales/modal_historial_viajes.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/confirmaciones.js' %}"></script>
+{% endblock %}

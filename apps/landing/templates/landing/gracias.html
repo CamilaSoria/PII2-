@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Gracias por tu interés!</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl text-center border border-gray-100 animate-fade-in">
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 mb-6">
+            <svg class="h-10 w-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-3">¡Solicitud Recibida!</h1>
+        <p class="text-gray-600 mb-8 leading-relaxed">
+            Hemos registrado tus datos correctamente. Uno de nuestros asesores de viajes se pondrá en contacto contigo muy pronto para armar el itinerario de tus sueños.
+        </p>
+
+        <div class="space-y-3">
+            <a href="{% url 'landing' %}" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200">
+                Volver a la Página Principal
+            </a>
+            <p class="text-xs text-gray-400">¿Tienes dudas? Soporte disponible 24/7</p>
+        </div>
+    </div>
+
+</body>
+</html>

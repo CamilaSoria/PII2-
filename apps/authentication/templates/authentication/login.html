@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar Sesión</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center px-4">
+
+<div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 sm:p-10">
+    <h2 class="text-2xl font-black text-slate-900 mb-6">Bienvenido al Sistema</h2>
+
+    {% if error %}
+    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
+        <p>{{ error }}</p>
+        {% if "bloqueada" in error or "3 veces" in error %}
+        <a href="{% url 'authentication:solicitar_restablecimiento' %}" class="underline font-semibold mt-1 block">
+            Restablecer mi contraseña ahora
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="bg-blue-50 border border-blue-200 text-blue-700 text-sm rounded-xl px-4 py-3 mb-4">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" id="loginForm" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Correo Electrónico</label>
+            <input type="email" id="email" name="email" placeholder="tu@correo.com" required
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+        </div>
+        <div>
+            <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+        </div>
+        <div class="text-right">
+            <a href="{% url 'authentication:solicitar_restablecimiento' %}" class="text-xs text-blue-600 hover:underline font-medium">
+                ¿Olvidaste tu contraseña?
+            </a>
+        </div>
+        <button type="submit" id="btnIngresar"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all duration-200 text-sm uppercase tracking-wider shadow-md shadow-blue-600/10">
+            Iniciar Sesión
+        </button>
+    </form>
+
+    <p class="text-center text-sm text-slate-500 mt-6">
+        ¿No tienes una cuenta?
+        <a href="{% url 'authentication:registro' %}" class="text-blue-600 font-semibold hover:underline">Regístrate aquí</a>
+    </p>
+</div>
+
+</body>
+</html>

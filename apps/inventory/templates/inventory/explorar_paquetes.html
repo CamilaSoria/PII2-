@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+        <div>
+            <h1 class="h2 text-dark fw-bold mb-1">🎒 Explora tu Próxima Aventura</h1>
+            <p class="text-muted mb-0">Encuentra y compara las mejores joyas turísticas disponibles.</p>
+        </div>
+        
+        <form method="GET" action="" class="d-flex gap-2">
+            <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre..." value="{{ buscar }}">
+            <button type="submit" class="btn btn-dark fw-bold px-4">Buscar</button>
+        </form>
+    </div>
+
+    {% if paquetes_a_comparar %}
+        <div class="card shadow-sm border-0 p-4 bg-light mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 fw-bold text-dark mb-0">📊 Tabla Comparativa de Destinos</h2>
+                <a href="{% url 'inventory:limpiar_comparacion' %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                    🗑️ Limpiar Comparador
+                </a>
+            </div>
+            
+            <div class="table-responsive bg-white rounded border">
+                <table class="table table-striped table-hover mb-0 text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-start ps-4">Características</th>
+                            {% for p in paquetes_a_comparar %}
+                                <th>{{ p.nombre }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-start ps-4 text-muted">Precio</td>
+                            {% for p in paquetes_a_comparar %}
+                                <td class="fw-bold text-dark font-monospace">Bs{{ p.precio }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td class="text-start ps-4 text-muted">Duración</td>
+                            {% for p in paquetes_a_comparar %}
+                                <td>⏳ {{ p.duracion_dias }} días</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td class="text-start ps-4 text-muted">Dificultad</td>
+                            {% for p in paquetes_a_comparar %}
+                                <td>
+                                    <span class="badge {% if p.dificultad == 'Alta' %}bg-danger{% elif p.dificultad == 'Media' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                        {{ p.get_dificultad_display }}
+                                    </span>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td class="text-start ps-4 text-muted">Cupos Libres</td>
+                            {% for p in paquetes_a_comparar %}
+                                <td class="small text-secondary">👥 {{ p.cupos_totales }} disponibles</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td class="text-start ps-4 text-muted">Acción</td>
+                            {% for p in paquetes_a_comparar %}
+                                <td>
+                                    <a href="{% url 'inventory:procesar_compra_simulada' p.id %}?cantidad_cupos=1" class="btn btn-sm btn-success fw-bold px-3 rounded-pill">
+                                        🎟️ Reservar ya
+                                    </a>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for p in paquetes %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden bg-white">
+                    
+                    {% if p.imagen_archivo %}
+                        <img src="{{ p.imagen_archivo.url }}" class="card-img-top" alt="{{ p.nombre }}" style="height: 180px; object-fit: cover;">
+                    {% elif p.imagen_url %}
+                        <img src="{{ p.imagen_url }}" class="card-img-top" alt="{{ p.nombre }}" style="height: 180px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600" class="card-img-top" alt="Viaje" style="height: 180px; object-fit: cover;">
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column justify-content-between p-3">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-light text-secondary border px-2 py-1 small">{{ p.categoria }}</span>
+                                <span class="fw-bold text-dark font-monospace fs-5">Bs{{ p.precio }}</span>
+                            </div>
+                            <h3 class="h5 fw-bold text-dark my-2">{{ p.nombre }}</h3>
+                            <p class="text-muted small mb-3">{{ p.descripcion|truncatewords:12 }}</p>
+                            
+                            <div class="mb-3">
+                                {% for poi in p.pois.all %}
+                                    <span class="badge bg-light text-dark border rounded-pill me-1 mb-1" style="font-size: 0.7rem;">
+                                        📍 {{ poi.nombre }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <a href="{% url 'inventory:agregar_a_comparacion' p.id %}" class="btn btn-sm btn-outline-dark w-100 fw-bold rounded-pill mb-2">
+                                🔄 Comparar Destino
+                            </a>
+
+                            <form method="GET" action="{% url 'inventory:procesar_compra_simulada' p.id %}" class="row g-2 align-items-center">
+                                <div class="col-4">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="cantidad_cupos" class="form-control text-center rounded-pill-start" value="1" min="1" max="{{ p.cupos_totales }}">
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <button type="submit" class="btn btn-sm btn-success w-100 fw-bold rounded-pill">
+                                        💵 Comprar Ticket
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted fs-5">No hay paquetes disponibles en este momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

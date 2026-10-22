@@ -1,0 +1,189 @@
+{% extends 'base_dashboard.html' %} {# Sincronizado con tu base corporativa #}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4" style="font-family: 'Segoe UI', system-ui, sans-serif;">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded shadow-sm border-start border-warning border-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="h4 mb-0 text-dark fw-bold">✏️ Edición Técnica de Atractivo</h2>
+                
+                <span id="badge-estado-poi" class="badge p-2 rounded-pill {% if poi.estado == 'APROBADO' %}bg-success text-white{% else %}bg-danger text-white{% endif %}" style="font-size: 11px;">
+                    {% if poi.estado == 'APROBADO' %}🟢 Publicado (Aprobado){% else %}⏳ En Revisión (Pendiente){% endif %}
+                </span>
+            </div>
+            <p class="text-muted small mb-0">Modificando los parámetros base de: <strong class="text-primary">{{ poi.nombre }}</strong>.</p>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button type="button" id="btn-cambiar-estado" 
+                    data-url="{% url 'gestion:alternar_estado_poi' poi.id %}" 
+                    class="btn {% if poi.estado == 'APROBADO' %}btn-outline-danger{% else %}btn-success{% endif %} px-3 shadow-sm fw-bold rounded-pill">
+                {% if poi.estado == 'APROBADO' %}🛑 Desactivar / Rechazar{% else %}✅ Aprobar Ahora{% endif %}
+            </button>
+            
+            <a href="{% url 'gestion:administrar_pois' %}" class="btn btn-outline-secondary px-4 shadow-sm fw-semibold rounded-pill">
+                ↩️ Volver
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" id="formEditarPoi">
+        {% csrf_token %}
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="bg-white p-4 rounded-3 shadow-sm border h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h6 class="text-warning fw-bold mb-3 border-bottom pb-2">📋 Atributos del Atractivo</h6>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small mb-1">{{ form.nombre.label }}</label>
+                            {{ form.nombre }}
+                            {% if form.nombre.errors %}<div class="text-danger small mt-1">{{ form.nombre.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small mb-1">{{ form.categoria.label }}</label>
+                            {{ form.categoria }}
+                            {% if form.categoria.errors %}<div class="text-danger small mt-1">{{ form.categoria.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small mb-1">{{ form.descripcion.label }}</label>
+                            {{ form.descripcion }}
+                            {% if form.descripcion.errors %}<div class="text-danger small mt-1">{{ form.descripcion.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="row g-3 mb-3">
+                            {% if poi.imagen_archivo or poi.imagen_url %}
+                            <div class="col-sm-4 text-center border-end">
+                                <label class="form-label d-block text-muted small fw-bold mb-1">🖼️ Portada Actual:</label>
+                                <img src="{% if poi.imagen_archivo %}{{ poi.imagen_archivo.url }}{% else %}{{ poi.imagen_url }}{% endif %}" 
+                                     class="rounded shadow-sm border img-fluid" 
+                                     style="height: 85px; width: 100%; object-fit: cover;">
+                            </div>
+                            {% endif %}
+                            
+                            <div class="{% if poi.imagen_archivo or poi.imagen_url %}col-sm-8{% else %}col-12{% endif %}">
+                                <label class="form-label d-block text-muted small fw-bold mb-1">
+                                    📸 Galería de Fotos Guardadas ({{ poi.imagenes_galeria.count }}):
+                                </label>
+                                
+                                <div class="d-flex flex-wrap gap-2 p-2 bg-light rounded-3 border align-items-center" style="min-height: 85px;">
+                                    {% for img_satelite in poi.imagenes_galeria.all %}
+                                        <div class="position-relative card-foto-galeria" id="foto-wrapper-{{ img_satelite.id }}" style="width: 80px; height: 65px; margin: 2px;">
+                                            <img src="{{ img_satelite.imagen.url }}" 
+                                                class="rounded shadow-sm border w-100 h-100" 
+                                                style="object-fit: cover;">
+                                            
+                                            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center gap-1 opacity-actions bg-dark bg-opacity-50 rounded" style="transition: opacity 0.2s; opacity: 0;">
+                                                <button type="button" class="btn btn-warning btn-sm p-1 lh-1 btn-hacer-portada" 
+                                                        data-url="{% url 'gestion:asignar_portada_poi' poi.id img_satelite.id %}" 
+                                                        title="Hacer Portada">
+                                                    👑
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm p-1 lh-1 btn-borrar-foto" 
+                                                        data-id="{{ img_satelite.id }}"
+                                                        data-url="{% url 'gestion:eliminar_foto_galeria' img_satelite.id %}" 
+                                                        title="Eliminar Imagen">
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <div class="text-muted small text-center w-100 py-3">
+                                            📭 Este atractivo no tiene imágenes secundarias en su galería todavía.
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-secondary small mb-1">
+                                    🔼 {{ form.imagenes_multiples.label }}
+                                </label>
+                                {{ form.imagenes_multiples }}
+                                
+                                <div id="preview-container" class="d-flex flex-wrap gap-2 p-3 border rounded-3 bg-light align-items-center justify-content-center mt-2" style="min-height: 65px;">
+                                    <span class="text-muted small my-auto" id="preview-placeholder">
+                                        📸 Selecciona nuevos archivos para sumar a la galería o coronar una portada nueva...
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>
+                        .card-foto-galeria:hover .opacity-actions {
+                            opacity: 1 !important;
+                        }
+                    </style>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="bg-white p-4 rounded-3 shadow-sm border h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h6 class="text-success fw-bold mb-3 border-bottom pb-2">📍 Recalibración de Coordenadas</h6>
+                        <p class="text-muted small mb-3">Haz clic en cualquier punto del mapa para mover el pin geográfico y actualizar las directrices de ruta.</p>
+                        
+                        <div id="mapaEditar_{{ poi.id }}" 
+                             data-lat="{{ poi.latitud|stringformat:'s' }}" 
+                             data-lon="{{ poi.longitud|stringformat:'s' }}" 
+                             style="height: 320px; width: 100%; z-index: 1;" 
+                             class="rounded-3 border shadow-sm mb-3">
+                        </div>
+                    </div>
+
+                    <div class="row g-2 bg-light p-3 rounded-3 border">
+                        <div class="col-6">
+                            <label class="form-label small text-muted fw-bold mb-1">🌐 Latitud Guardada</label>
+                            {{ form.latitud }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small text-muted fw-bold mb-1">🌐 Longitud Guardada</label>
+                            {{ form.longitud }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mt-4 p-3 bg-white rounded shadow-sm border">
+            <a href="{% url 'gestion:administrar_pois' %}" class="btn btn-light border px-5 py-2 fw-semibold rounded-pill text-secondary">
+                Cancelar
+            </a>
+            <button type="submit" class="btn btn-warning px-5 py-2 fw-bold text-dark rounded-pill shadow-sm">
+                💾 Guardar Cambios y Actualizar Rutas
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/leaflet.js' %}"></script>
+    <script src="{% static 'js/mapa_poi.js' %}"></script>
+    <script src="{% static 'js/preview_images.js' %}"></script>
+    <script src="{% static 'js/editar_galeria.js' %}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Despertar el mapa líquido de Leaflet para corregir fallos visuales de tamaño
+            const divMapa = document.querySelector('[id^="mapaEditar_"]');
+            if (divMapa) {
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
+            }
+        });
+    </script>
+
+{% endblock %}

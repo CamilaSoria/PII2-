@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Paquetes Turísticos</title>
+</head>
+<body>
+
+    <nav>
+        <a href="{% url 'inventory:lista_paquetes' %}">
+            Agencia de Viajes
+        </a>
+        <div>
+            <a href="{% url 'authentication:dashboard' %}">Dashboard</a>
+            <a href="{% url 'authentication:perfil' %}">Mi Perfil</a>
+        </div>
+    </nav>
+
+    <div>
+        
+        <div>
+            <h3>Filtrar Viajes</h3>
+            <form method="get">
+                <div>
+                    <label>Categoría</label>
+                    <select name="categoria">
+                        <option value="">Todas las categorías</option>
+                        {% for c in categorias %}
+                            <option value="{{ c.id }}" {% if filtros.categoria == c.id|stringformat:"i" %}selected{% endif %}>{{ c.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Duración (Días)</label>
+                    <input type="number" name="duracion" value="{{ filtros.duracion }}" placeholder="Ej: 3">
+                </div>
+                <div>
+                    <label>Precio Máximo (Bs)</label>
+                    <input type="number" name="precio_max" value="{{ filtros.precio_max }}" placeholder="Ej: 500">
+                </div>
+                <div>
+                    <label>Dificultad</label>
+                    <select name="dificultad">
+                        <option value="">Cualquier dificultad</option>
+                        <option value="baja" {% if filtros.dificultad == 'baja' %}selected{% endif %}>Baja</option>
+                        <option value="media" {% if filtros.dificultad == 'media' %}selected{% endif %}>Media</option>
+                        <option value="alta" {% if filtros.dificultad == 'alta' %}selected{% endif %}>Alta</option>
+                    </select>
+                </div>
+                
+                <button type="submit">
+                    <span>Aplicar Filtros</span>
+                </button>
+                
+                <a href="{% url 'inventory:lista_paquetes' %}">Limpiar filtros</a>
+            </form>
+        </div>
+
+        <div>
+            {% for p in paquetes %}
+                <div>
+                    <div>
+                        {% if p.imagen_archivo %}
+                            <img src="{{ p.imagen_archivo.url }}" class="card-img-top" alt="{{ p.nombre }}" style="height: 180px; object-fit: cover;">
+                        {% elif p.imagen_url %}
+                            <img src="{{ p.imagen_url }}" class="card-img-top" alt="{{ p.nombre }}" style="height: 180px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600" class="card-img-top" alt="Viajes" style="height: 180px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <h3>{{ p.nombre }}</h3>
+                        <p>{{ p.descripcion|truncatewords:15 }}</p>
+                        
+                        <div>
+                            <p><strong>Duración:</strong> {{ p.duracion_dias }} días</p>
+                            <p><strong>Dificultad:</strong> {{ p.get_dificultad_display }}</p>
+                            <p><strong>Calificación:</strong> {{ p.calificacion_promedio }} / 5</p>
+                        </div>
+
+                        <div>${{ p.precio }}</div>
+                        
+                        <a href="{% url 'inventory:detalle_paquete' p.id %}">Ver Detalles</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div>
+                    <p>No se encontraron paquetes con los filtros seleccionados.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

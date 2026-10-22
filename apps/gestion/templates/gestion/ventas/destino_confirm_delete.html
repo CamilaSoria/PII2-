@@ -1,0 +1,29 @@
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">⚠ Confirmar Eliminación</h5>
+                </div>
+                <div class="card-body text-center py-4">
+                    <p class="fs-5">¿Estás seguro de que deseas eliminar permanentemente el destino turístico?</p>
+                    <h3 class="text-danger my-3">"{{ object.nombre }}"</h3>
+                    <p class="text-muted small">
+                        Esta acción no se puede deshacer. Se eliminarán también todas las imágenes asociadas a la galería de este destino.
+                    </p>
+                </div>
+                <div class="card-footer bg-light d-flex justify-content-center py-3">
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4 me-2">Sí, Eliminar de todos modos</button>
+                        <a href="{% url 'gestion:destino_list' %}" class="btn btn-secondary px-4">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% for u in usuarios %}
+<tr>
+    <td class="ps-4">
+        <span class="fw-bold d-block text-dark text-nombre">{{ u.nombre }}</span>
+        <small class="text-muted">ID: #{{ u.id }}</small>
+    </td>
+    <td class="text-email">{{ u.email }}</td>
+    <td>
+        {% if u.is_superuser %}
+            <span class="badge badge-admin">👑 Administrador</span>
+        {% elif u.is_staff %}
+            <span class="badge badge-staff">💼 Staff</span>
+        {% else %}
+            <span class="badge badge-turista">✈️ Turista</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if u.is_active %}
+            <span class="badge badge-activo">Activo</span>
+        {% else %}
+            <span class="badge badge-baneado">Baneado</span>
+        {% endif %}
+    </td>
+    <td class="text-end pe-4">
+        <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'gestion:editar_usuario' u.pk %}" class="btn btn-sm btn-editar">✏️ Editar</a>
+            {% if u.id != request.user.id %}
+                <form action="{% url 'gestion:alternar_estado_usuario' u.pk %}" method="post" class="m-0" onsubmit="return confirm('¿Estás seguro?');">
+                    {% csrf_token %}
+                    {% if u.is_active %}
+                        <button type="submit" class="btn btn-sm btn-banear">🚫 Banear</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-sm btn-activar">✅ Activar</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5" class="text-center py-5 text-muted">No se encontraron usuarios que coincidan con la búsqueda.</td>
+</tr>
+{% endfor %}

@@ -1,0 +1,290 @@
+/* ==========================================================================
+   static/css/gestion.css
+   Estilos específicos para la Tabla y Acciones de Gestión de Usuarios
+   ========================================================================== */
+
+/* Ajustes de tipografía en filas */
+.text-nombre {
+    font-size: 0.95rem;
+    color: #252e40 !important;
+}
+
+.text-email {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* Rediseño estilizado de los Badges (Roles) */
+.badge-admin {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+    border: 1px solid #fee2e2;
+}
+
+.badge-staff {
+    background-color: #fffbeb !important;
+    color: #d97706 !important;
+    border: 1px solid #fef3c7;
+}
+
+.badge-turista {
+    background-color: #f0fdf4 !important;
+    color: #16a34a !important;
+    border: 1px solid #dcfce7;
+}
+
+/* Rediseño de los Estados (Activo / Baneado) con píldoras modernas */
+.badge-activo {
+    background-color: #ecfdf5 !important;
+    color: #059669 !important;
+    border: 1px solid #a7f3d0 !important;
+    border-radius: 50px !important;
+    padding: 4px 12px !important;
+}
+
+.badge-baneado {
+    background-color: #fff5f5 !important;
+    color: #e11d48 !important;
+    border: 1px solid #fecdd3 !important;
+    border-radius: 50px !important;
+    padding: 4px 12px !important;
+}
+
+/* Personalización Avanzada de Botones de Acción */
+.btn-editar {
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+    background-color: #ffffff;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-editar:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8 !important;
+    color: #252e40 !important;
+}
+
+.btn-banear {
+    border-color: #fee2e2 !important;
+    color: #dc2626 !important;
+    background-color: #fff5f5;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-banear:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+.btn-activar {
+    border-color: #dcfce7 !important;
+    color: #16a34a !important;
+    background-color: #f0fdf4;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-activar:hover {
+    background-color: #16a34a !important;
+    border-color: #16a34a !important;
+    color: #ffffff !important;
+}
+
+/* Contenedor de la Paginación en la Tarjeta */
+.pagination-container {
+    background-color: #f8fafc !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+.pagination .page-link {
+    color: #475569 !important;
+    border-color: #e2e8f0 !important;
+    background-color: #ffffff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #94a3b8 !important;
+    background-color: #f1f5f9;
+}
+
+.pagination .page-link:hover:not(.disabled) {
+    background-color: #f1f5f9;
+    color: #252e40 !important;
+}
+
+/* ==========================================================================
+   Sección Adicional: Formulario Administrativo de Edición de Usuario
+   ========================================================================== */
+
+/* Contenedor y enlaces superiores del formulario */
+.container a.text-decoration-none {
+    color: #64748b !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.container a.text-decoration-none:hover {
+    color: #1b2230 !important; /* Se oscurece al pasar el cursor */
+}
+
+/* Estilizado de las etiquetas de los campos (Labels) */
+.form-label {
+    color: #334155;
+    font-size: 0.875rem;
+    margin-bottom: 6px;
+}
+
+/* Inputs de texto (Nombre y Correo generados por Django) */
+.card-body input[type="text"],
+.card-body input[type="email"] {
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+    color: #252e40;
+    background-color: #ffffff;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecto de enfoque cuando el Admin hace clic en un Input */
+.card-body input[type="text"]:focus,
+.card-body input[type="email"]:focus {
+    border-color: #c9a35b !important; /* Azul moderno corporativo */
+    box-shadow: 0 0 0 4px rgba(201, 163, 91, 0.18) !important; /* Brillo sutil */
+    outline: none;
+}
+
+/* Separador horizontal decorativo */
+hr.my-4 {
+    border-top: 1px solid #e2e8f0;
+    opacity: 1;
+}
+
+/* Estilizado de los Interruptores (Form Switches / Checkboxes) */
+.form-check.form-switch {
+    padding-left: 3rem; /* Más aire para que no choque el switch con el borde */
+    margin-bottom: 18px !important;
+}
+
+/* El interruptor pasivo (apagado) */
+.form-check-input {
+    width: 2.5em !important;
+    height: 1.25em !important;
+    margin-left: -3rem !important;
+    cursor: pointer;
+    border-color: #cbd5e1;
+    background-color: #f1f5f9;
+    transition: background-position 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+/* El interruptor cuando se activa (Encendido) */
+.form-check-input:checked {
+    background-color: #c9a35b !important; /* Fondo azul */
+    border-color: #c9a35b !important;
+}
+
+/* Alerta visual específica si el switch de Superusuario está activo */
+input[id*="superuser"]:checked {
+    background-color: #ef4444 !important; /* Rojo de peligro / advertencia */
+    border-color: #ef4444 !important;
+}
+
+/* Etiquetas de los switches */
+.form-check-label {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #475569;
+    padding-top: 2px;
+}
+
+/* Botón Principal de Guardar Cambios */
+.btn-primary.w-100 {
+    background-color: #1b2230 !important; /* Azul pizarra a juego con el Sidebar */
+    border-color: #1b2230 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.15) !important;
+    transition: all 0.2s ease;
+}
+
+.btn-primary.w-100:hover {
+    background-color: #252e40 !important; /* Un poco más claro al pasar el cursor */
+    border-color: #252e40 !important;
+    transform: translateY(-1px); /* Sutil efecto de elevación */
+    box-shadow: 0 6px 12px -2px rgba(15, 23, 42, 0.2) !important;
+}
+
+.btn-primary.w-100:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   Sección Adicional: Componentes de Filtrado y Búsqueda
+   ========================================================================== */
+
+.container-filtros {
+    background-color: #ffffff !important;
+    border-radius: 10px !important;
+}
+
+/* El menú desplegable (Select) estilizado como tus inputs */
+.form-select {
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+    color: #334155;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.form-select:focus {
+    border-color: #c9a35b !important;
+    box-shadow: 0 0 0 4px rgba(201, 163, 91, 0.18) !important;
+    outline: none;
+}
+
+/* Botón de Aplicar Filtros (Pizarra oscuro como el Sidebar) */
+.btn-filtrar {
+    background-color: #1b2230 !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: all 0.2s ease;
+}
+
+.btn-filtrar:hover {
+    background-color: #252e40 !important;
+    transform: translateY(-1px);
+}
+
+/* Botón de Limpiar / Resetear filtros */
+.btn-limpiar {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+}
+
+.btn-limpiar:hover {
+    background-color: #e2e8f0 !important;
+    color: #1b2230 !important;
+}

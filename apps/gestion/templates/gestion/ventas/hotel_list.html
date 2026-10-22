@@ -1,0 +1,165 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Gestión de Hoteles - SRTI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 mt-4" style="font-family: 'Segoe UI', system-ui, sans-serif;">
+    
+    {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                        {% if message.tags == 'error' %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% else %}
+                            <i class="fas fa-check-circle me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded shadow-sm border-start border-primary border-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">🏨 Gestión de Hoteles</h1>
+            <p class="text-muted small mb-0">HU14: Administra los alojamientos disponibles para los paquetes turísticos.</p>
+        </div>
+        <a href="{% url 'gestion:hotel_create' %}" class="btn btn-primary btn-sm shadow-sm fw-bold px-3 rounded-pill">
+            ➕ Registrar Nuevo Hotel
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0 rounded-3 overflow-hidden">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Hoteles Registrados en el Sistema</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="table-light text-secondary small text-uppercase fw-bold">
+                        <tr>
+                            <th class="ps-4">Hotel / Destino</th>
+                            <th>Estrellas</th>
+                            <th>📍 Ubicación Geográfica</th> <th>Servicios Incluidos</th>
+                            <th>Habitaciones Base</th>
+                            <th>Estado</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        {% for hotel in hoteles %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-container me-3 bg-light rounded text-center p-0" style="width: 55px; height: 45px; overflow: hidden; border: 1px solid #dee2e6;">
+                                        {% if hotel.imagenes.exists %}
+                                            {% for img in hotel.imagenes.all %}
+                                                {% if img.es_principal %}
+                                                    <img src="{% if img.imagen_archivo %}{{ img.imagen_archivo.url }}{% else %}{{ img.imagen_url }}{% endif %}" 
+                                                         class="img-fluid rounded w-100 h-100" 
+                                                         style="object-fit: cover;" 
+                                                         title="Portada seleccionada">
+                                                {% endif %}
+                                            {% endfor %}
+                                            
+                                            {% if not hotel.imagenes.filter.es_principal %}
+                                                {% with primera=hotel.imagenes.first %}
+                                                    <img src="{% if primera.imagen_archivo %}{{ primera.imagen_archivo.url }}{% else %}{{ primera.imagen_url }}{% endif %}" 
+                                                         class="img-fluid rounded w-100 h-100" 
+                                                         style="object-fit: cover;">
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-secondary">
+                                                <i class="fas fa-hotel fa-lg"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">{{ hotel.nombre }}</h6>
+                                        <span class="text-muted text-xs"><i class="fas fa-map-marker-alt me-1"></i>{{ hotel.destino.nombre }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <div class="fw-bold text-dark d-flex align-items-center bg-light px-2 py-1 rounded border d-inline-block">
+                                    <span class="me-1 text-warning"><i class="fas fa-star shadow-sm"></i></span>
+                                    <span>{{ hotel.calificacion_estrellas }} Estrellas</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                {% if hotel.latitud and hotel.longitud %}
+                                    <code class="text-success small fw-bold font-monospace bg-light p-1.5 rounded border d-inline-block" style="font-size: 11px;">
+                                        📍 {{ hotel.latitud|floatformat:5 }} , {{ hotel.longitud|floatformat:5 }}
+                                    </code>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger px-2 py-1 rounded small" style="font-size: 11px;">
+                                        ⚠️ Sin Georreferencia
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-wrap gap-1" style="max-width: 250px;">
+                                    {% for servicio in hotel.servicios.all %}
+                                        <span class="badge bg-light text-dark border text-xs px-2 py-1 rounded-pill">
+                                            {% if servicio.icono %}<i class="{{ servicio.icono }} me-1 text-primary"></i>{% endif %}{{ servicio.nombre }}
+                                        </span>
+                                    {% empty %}
+                                        <span class="text-muted text-xs italic">Sin servicios</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+
+                            <td>
+                                <ul class="list-unstyled mb-0 text-xs" style="max-width: 220px;">
+                                    {% for habitacion in hotel.tipos_habitacion.all %}
+                                        <li class="text-truncate">• {{ habitacion.nombre }} <strong class="text-success">(${{ habitacion.precio_por_noche }})</strong></li>
+                                    {% empty %}
+                                        <li class="text-danger italic small">Requiere configurar habitación</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+
+                            <td>
+                                {% if hotel.esta_activo %}
+                                    <span class="badge bg-success-subtle text-success px-2 py-1 rounded">Disponible</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger px-2 py-1 rounded">No Disponible</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-end pe-4">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'gestion:hotel_update' hotel.pk %}" class="btn btn-outline-secondary btn-sm px-2" title="Editar parámetros y galería">
+                                        <i class="fas fa-edit me-1"></i> Editar
+                                    </a>
+                                    <a href="{% url 'gestion:hotel_delete' hotel.pk %}" class="btn btn-outline-danger btn-sm px-2" title="Eliminar hotel">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-hotel fa-3x mb-3 text-light"></i>
+                                <p class="mb-0">No hay hoteles registrados en el sistema actualmente.</p>
+                                <small>Haz clic en "Registrar Nuevo Hotel" para comenzar.</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

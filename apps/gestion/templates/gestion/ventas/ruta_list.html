@@ -1,0 +1,111 @@
+{% extends 'base_dashboard.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-map"></i> Gestión de Rutas Turísticas</h2>
+            <p class="text-muted mb-0">HU13 — Agente de Ventas & Administrador</p>
+        </div>
+        <a href="{% url 'gestion:ruta_create' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Nueva Ruta
+        </a>
+    </div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 10%;" class="text-center">Vista Previa</th>
+                    <th style="width: 20%;">Nombre de la Ruta</th>
+                    <th style="width: 15%;">Origen ➔ Destino</th>
+                    <th style="width: 15%;">Horarios</th>
+                    <th style="width: 25%;">Recorrido (Paradas Intermedias)</th>
+                    <th style="width: 15%;" class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ruta in rutas %}
+                <tr>
+                    <td class="text-center">
+                        {% with ruta.imagenes_galeria.first as primera_img %}
+                            {% if primera_img %}
+                                {% if primera_img.imagen_archivo %}
+                                    <img src="{{ primera_img.imagen_archivo.url }}" class="img-thumbnail rounded shadow-sm" style="width: 70px; height: 50px; object-fit: cover;" alt="{{ ruta.nombre }}">
+                                {% elif primera_img.imagen_url %}
+                                    <img src="{{ primera_img.imagen_url }}" class="img-thumbnail rounded shadow-sm" style="width: 70px; height: 50px; object-fit: cover;" alt="{{ ruta.nombre }}">
+                                {% endif %}
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center m-auto shadow-sm" style="width: 70px; height: 50px; border: 1px solid #dee2e6;">
+                                    <i class="bi bi-map-fill text-muted fs-4"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+
+                    <td>
+                        <span class="fw-bold text-primary">{{ ruta.nombre }}</span>
+                        <br>
+                        <small class="text-muted">Destino base: {{ ruta.destino.nombre }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">{{ ruta.origen_logistico }}</span>
+                        <i class="bi bi-arrow-right mx-1"></i>
+                        <span class="badge bg-success">{{ ruta.destino_logistico }}</span>
+                    </td>
+                    <td>
+                        <small>
+                            <strong>Salida:</strong> {{ ruta.horario_salida|time:"H:i" }}<br>
+                            <strong>Retorno:</strong> {{ ruta.horario_retorno|time:"H:i" }}
+                        </small>
+                    </td>
+                    <td>
+                        {% if ruta.detalles_paradas.all %}
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for parada in ruta.detalles_paradas.all %}
+                                    <span class="badge bg-light text-dark border" title="Parada {{ parada.orden }}">
+                                        {{ parada.orden }}. {{ parada.poi.nombre }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="text-muted small">Sin paradas intermedias configuradas</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'gestion:ruta_edit' ruta.id %}" class="btn btn-warning btn-sm" title="Editar">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <a href="{% url 'gestion:ruta_delete' ruta.id %}" class="btn btn-danger btn-sm" title="Eliminar">
+                                <i class="bi bi-trash"></i> Borrar
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+                        No hay rutas registradas en el sistema todavía.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasarela de Pago Seguro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="path/to/tu/carpeta/js/pasarela.js" defer></script>
+</head>
+<body>
+
+    <div>
+        <h2>Pasarela de Pago</h2>
+        <p>Paquete Turístico:</p>
+        <h3>{{ reserva.paquete.nombre }}</h3>
+        
+        <p>Total a Transferir:</p>
+        <h1>${{ pago.monto }}</h1>
+        
+        {% if pago.estado == 'COMPLETADO' %}
+            <span>Estado: COMPRA CONFIRMADA</span>
+            <p>¡Tu pago fue verificado criptográficamente por el banco!</p>
+            <a href="{% url 'authentication:perfil' %}">Ir a mis Reservas</a>
+        {% else %}
+            <span>Estado: {{ pago.get_estado_display }}</span>
+            <p>Para efectos de la evaluación, este botón simula la respuesta asíncrona del procesador bancario enviando un Webhook firmado con HMAC-SHA256.</p>
+            
+            <button id="btnPagar" 
+                    data-reserva-id="{{ reserva.id_reserva }}" 
+                    data-secret-key="{{ secret_key_pasarela }}" 
+                    data-url="{% url 'bookings:webhook_pagos' %}">
+                Simular Pago Exitoso (Pasarela)
+            </button>
+        {% endif %}
+    </div>
+
+</body>
+</html>

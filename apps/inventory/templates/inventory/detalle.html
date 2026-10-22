@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ paquete.nombre }} - Detalles</title>
+    
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/detalle.css' %}">
+    
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" defer></script>
+    <script src="{% static 'js/detalle_reserva.js' %}" defer></script>
+</head>
+<body class="bg-light">
+
+    <div class="container my-5">
+        
+        <a href="{% url 'authentication:dashboard' %}" class="btn btn-sm btn-outline-secondary mb-4">⬅️ Volver al Catálogo</a>
+        
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                
+                <div class="card shadow-sm p-4 mb-4 bg-white rounded-3">
+                    <h1 class="display-5 fw-bold text-dark">{{ paquete.nombre }}</h1>
+                    <div class="mb-2 fs-5">Calificación: <span class="text-warning">★</span> {{ paquete.calificacion_promedio }}</div>
+                    <span class="badge bg-dark px-3 py-2 rounded-pill fs-6">{{ paquete.categoria.nombre }}</span>
+                    <p class="lead mt-4 text-secondary">{{ paquete.descripcion }}</p>
+                    
+                    <div class="row g-3 text-center mt-2">
+                        <div class="col-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <small class="text-muted d-block">Duración</small>
+                                <strong class="fs-5 text-primary">{{ paquete.duracion_dias }} Días</strong>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <small class="text-muted d-block">Dificultad</small>
+                                <strong class="fs-5 text-primary">{{ paquete.get_dificultad_display }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <small class="text-muted d-block">Cupos</small>
+                                <strong class="fs-5 text-success">{{ paquete.cupos_totales }} Disp.</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm p-4 mb-4 bg-white rounded-3">
+                    <h2 class="h4 fw-bold mb-3">Galería de Imágenes del Paquete</h2>
+                    <div class="row g-2">
+                        {% if paquete.imagenes_galeria.all %}
+                            {% for foto in paquete.imagenes_galeria.all %}
+                                <div class="col-md-4 col-6">
+                                    <div class="ratio ratio-16x9 rounded-2 overflow-hidden border">
+                                        <img src="{% if foto.imagen_url %}{{ foto.imagen_url }}{% else %}{{ foto.imagen_archivo.url }}{% endif %}" alt="Galería" class="img-fluid object-fit-cover">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-md-4 col-6">
+                                <div class="ratio ratio-16x9 rounded-2 overflow-hidden border bg-secondary d-flex align-items-center justify-content-center text-white">
+                                    {% if paquete.imagen_url %}
+                                        <img src="{{ paquete.imagen_url }}" alt="Principal" class="img-fluid object-fit-cover">
+                                    {% else %}
+                                        <div class="p-2 text-center small">Vista Panorámica</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card shadow-sm p-4 bg-white rounded-3">
+                    <h2 class="h4 fw-bold mb-3">🗺️ Hoja de Ruta e Itinerario Logístico</h2>
+                    {% if paquete.ruta %}
+                        <h3 class="h5 text-secondary mb-1">Recorrido Oficial: {{ paquete.ruta.nombre }}</h3>
+                        <p class="text-muted small">Duración estimada en viaje continuo: {{ paquete.ruta.duracion_estimada }} minutos.</p>
+                        
+                        <div class="list-group list-group-flush mt-3">
+                            {% for parada in paquete.ruta.paradaruta_set.all %}
+                                <div class="list-group-item py-3 px-0 border-0 d-flex gap-3">
+                                    <div class="fs-4 text-primary">📍</div>
+                                    <div>
+                                        <span class="badge bg-primary mb-1">{{ parada.hora_estimada|time:"H:i A" }}</span>
+                                        <h4 class="h6 mb-1 fw-bold">Parada {{ parada.orden }}: {{ parada.punto_de_interes.nombre }}</h4>
+                                        <p class="text-muted small mb-2">Logística: {{ parada.nota_logistica|default:"Visita libre sin especificaciones de transbordo." }}</p>
+                                        
+                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalPOI{{ parada.id }}">
+                                            🔍 Detalles de la Joya Oculta
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="modalPOI{{ parada.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fw-bold">📍 {{ parada.punto_de_interes.nombre }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><span class="badge bg-secondary">{{ parada.punto_de_interes.get_categoria_display }}</span></p>
+                                                <p>{{ parada.punto_de_interes.descripcion }}</p>
+                                                <p class="text-muted small"><strong>Ubicación de referencia:</strong> {{ parada.punto_de_interes.referencia_ubicacion }}</p>
+                                                
+                                                {% if parada.punto_de_interes.imagen_url %}
+                                                    <img src="{{ parada.punto_de_interes.imagen_url }}" alt="POI" class="img-fluid rounded border mt-2">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-warning">⚠️ Este paquete no posee una ruta logística asignada temporalmente.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm p-4 bg-white rounded-3 border-top border-primary border-4 sticky-top" style="top: 20px; z-index: 1000;">
+                    <h2 class="h4 fw-bold mb-3">Formalizar mi Viaje</h2>
+                    
+                    <div id="precio-final-dinamico" data-precio-base="{{ paquete.precio_final }}" class="mb-4">
+                        <span class="display-6 fw-bold text-primary">${{ paquete.precio_final }}</span>
+                        <small class="text-muted d-block mt-1">Precio Final garantizado (por pasajero)</small>
+                    </div>
+
+                    {% if paquete.cupos_totales > 0 %}
+                        <form id="formReserva" action="{% url 'bookings:crear_reserva_transaccional' paquete.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="fecha_viaje" class="form-label fw-semibold">Fecha de Salida:</label>
+                                <input type="date" id="fecha_viaje" name="fecha_viaje" class="form-control" required value="2026-06-15">
+                            </div>
+                            <div class="mb-4">
+                                <label for="cantidad_pasajeros" class="form-label fw-semibold">Cantidad de Pasajeros:</label>
+                                <input type="number" id="cantidad_pasajeros" name="cantidad_pasajeros" class="form-control" min="1" max="{{ paquete.cupos_totales }}" value="1" required>
+                            </div>
+                            <button type="submit" id="btnReservar" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">Confirmar Reserva</button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-danger text-center fw-bold" role="alert">
+                            ❌ Sin cupos disponibles por el momento
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row g-4">
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 position-sticky" style="top: 20px;">
+            <div class="card-body">
+                <h2 class="h4 mb-3 pb-2 border-bottom">🗺️ Explorador</h2>
+                
+                <button type="button" class="btn btn-success w-100 mb-3 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalCrearPOI">
+                    ✨ Proponer Joya Oculta
+                </button>
+
+                <a href="{% url 'authentication:perfil' %}" class="btn btn-outline-secondary w-100">
+                    👤 Volver a Mi Perfil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h2 class="h4 mb-3 pb-2 border-bottom">💎 Mis Joyas Ocultas Propuestas</h2>
+                
+                {% for poi in mis_puntos %}
+                    <div class="card mb-3 border border-light-subtle shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                
+                                <div class="col-md-8 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                            <h3 class="h5 mb-0 text-primary fw-bold">{{ poi.nombre }}</h3>
+                                            <span class="badge bg-secondary-subtle text-secondary border rounded-pill px-2 py-0.5 small">
+                                                {{ poi.get_categoria_display }}
+                                            </span>
+                                            
+                                            {% if poi.estado == 'APROBADO' %}
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Aprobado (Público) 🟢</span>
+                                            {% elif poi.estado == 'PENDIENTE' %}
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill">En Revisión 🟡</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger fw-semibold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalEliminarPOI{{ poi.id }}">
+                                                        🗑️ Eliminar
+                                                    </button>
+                                            {% elif poi.estado == 'CAMBIOS' %}
+                                                <span class="badge bg-warning text-dark rounded-pill fw-bold">Requiere Cambios 🟠</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger fw-semibold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalEliminarPOI{{ poi.id }}">
+                                                        🗑️ Eliminar
+                                                    </button>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">Rechazado 🔴</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger fw-semibold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalEliminarPOI{{ poi.id }}">
+                                                            🗑️ Eliminar
+                                                    </button>
+                                            {% endif %}
+                                        </div>
+
+                                        <p class="card-text text-muted small mb-2">{{ poi.descripcion|truncatewords:25 }}</p>
+                                        
+                                        <div class="bg-light p-2 rounded mb-2 small text-secondary">
+                                            📍 <strong>Ubicación:</strong> {{ poi.referencia_ubicacion|truncatechars:65 }}
+                                        </div>
+                                    </div>
+
+                                    {% if poi.motivo_moderacion and poi.estado == 'CAMBIOS' %}
+                                        <div class="alert alert-warning py-2 px-3 my-2 small border-start border-4 border-warning">
+                                            <strong>💬 Feedback del Moderador:</strong> {{ poi.motivo_moderacion }}
+                                        </div>
+                                        <div class="text-start my-2">
+                                            <button type="button" class="btn btn-sm btn-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEditarPOI{{ poi.id }}">
+                                                ✏️ Corregir y Reenviar Propuesta
+                                            </button>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="mt-2">
+                                        <small class="text-muted" style="font-size: 0.75rem;">Enviado el {{ poi.fecha_propuesta|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 d-flex align-items-center justify-content-center border-start text-center">
+                                    {% if poi.imagen_archivo %}
+                                        <img src="{{ poi.imagen_archivo.url }}" class="img-fluid rounded border shadow-xs" alt="{{ poi.nombre }}" style="max-height: 110px; object-fit: cover; width: 100%;">
+                                    {% elif poi.imagen_url %}
+                                        <img src="{{ poi.imagen_url }}" class="img-fluid rounded border shadow-xs" alt="{{ poi.nombre }}" style="max-height: 110px; object-fit: cover; width: 100%;">
+                                    {% else %}
+                                        <div class="text-muted small p-3 bg-light rounded border border-dashed w-100">
+                                            <span class="fs-4 d-block">📷</span>
+                                            Sin foto
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalEditarPOI{{ poi.id }}" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title fw-bold">✏️ Corregir Propuesta: {{ poi.nombre }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <form action="{% url 'authentication:editar_joya_oculta' poi.id %}" method="POST">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="alert alert-info py-2 small mb-3">
+                                        <strong>Motivo del cambio:</strong> {{ poi.motivo_moderacion }}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">📸 Foto de la Joya Oculta (Link de Internet)</label>
+                                        <input type="url" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/foto.jpg" {% if poi.imagen_url %}value="{{ poi.imagen_url }}"{% endif %}>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Nombre del lugar</label>
+                                        <input type="text" name="nombre" class="form-control" value="{{ poi.nombre }}" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">🏷️ Categoría de la Joya Oculta</label>
+                                        <select name="categoria" class="form-select" required>
+                                            <option value="Naturaleza" {% if poi.categoria == 'Naturaleza' %}selected{% endif %}>🌲 Naturaleza</option>
+                                            <option value="Aventura" {% if poi.categoria == 'Aventura' %}selected{% endif %}>🧗‍♂️ Aventura</option>
+                                            <option value="Gastronomía" {% if poi.categoria == 'Gastronomía' %}selected{% endif %}>🍲 Gastronomía</option>
+                                            <option value="Cultural" {% if poi.categoria == 'Cultural' %}selected{% endif %}>🏛️ Cultural</option>
+                                            <option value="Mirador" {% if poi.categoria == 'Mirador' %}selected{% endif %}>📸 Mirador</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">¿Por qué es especial? (Descripción)</label>
+                                        <textarea name="descripcion" class="form-control" rows="3" required>{{ poi.descripcion }}</textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">¿Cómo llegar o dónde queda?</label>
+                                        <input type="text" name="referencia_ubicacion" class="form-control" value="{{ poi.referencia_ubicacion }}" required>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="form-label small text-muted">Latitud</label>
+                                            <input type="number" step="any" name="latitud" class="form-control form-control-sm" value="{{ poi.latitud|default_if_none:'' }}">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small text-muted">Longitud</label>
+                                            <input type="number" step="any" name="longitud" class="form-control form-control-sm" value="{{ poi.longitud|default_if_none:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-warning">🗺️ Corrige la ubicación en el mapa</label>
+                                        <div id="mapaEditar{{ poi.id }}" style="height: 300px; width: 100%;" class="rounded border shadow-sm" data-lat="{{ poi.latitud|default_if_none:'' }}" data-lon="{{ poi.longitud|default_if_none:'' }}"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer bg-light">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-warning fw-bold">Guardar y Reenviar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="modal fade" id="modalEliminarPOI{{ poi.id }}" Sample-id="{{ poi.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title fw-bold">⚠️ ¿Confirmar eliminación?</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-shadow="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 text-center">
+                                    <div class="fs-1 mb-2">🗑️</div>
+                                    <p class="mb-1 text-dark fw-semibold fs-5">¿Estás seguro de que deseas eliminar la propuesta?</p>
+                                    <p class="text-danger fw-bold mb-0">"{{ poi.nombre }}"</p>
+                                    <p class="text-muted small mt-2">Esta acción es definitiva y no se puede deshacer. Se borrarán los datos y la imagen del servidor.</p>
+                                </div>
+                                <div class="modal-footer bg-light border-top-0 d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary rounded-pill px-3 fw-semibold" data-bs-dismiss="modal">Cancelar</button>
+                                    
+                                    <form method="POST" action="{% url 'authentication:eliminar_poi_turista' poi.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm btn-confirmar-eliminar">
+                                            Sí, eliminar para siempre
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-5">
+                        <p class="text-muted italic mb-3">Aún no has compartido ningún secreto local.</p>
+                        <p class="small text-secondary">¡Sé el primero en sugerir una experiencia única para los próximos paquetes!</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'authentication/modales/modal_crear_poi.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/mapa_poi.js' %}"></script>
+    <script src="{% static 'js/eliminar_poi.js' %}"></script>
+{% endblock %}

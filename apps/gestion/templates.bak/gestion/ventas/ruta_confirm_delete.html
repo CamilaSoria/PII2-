@@ -1,0 +1,37 @@
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> ¿Confirmar Eliminación de Ruta?</h5>
+                </div>
+                <div class="card-body text-center py-4">
+                    <p class="fs-5">Está a punto de eliminar permanentemente la ruta:</p>
+                    <h3 class="text-danger my-3">"{{ object.nombre }}"</h3>
+                    <p class="text-muted small">
+                        <strong>Logística:</strong> {{ object.origen_logistico }} hacia {{ object.destino_logistico }}<br>
+                        Esta acción no se puede deshacer de forma directa.
+                    </p>
+                    
+                    <div class="alert alert-warning text-start mx-3" role="alert">
+                        <i class="bi bi-shield-fill-check"></i> <strong>Nota de seguridad:</strong> El sistema cancelará automáticamente esta operación si la ruta se encuentra asociada a un paquete turístico actualmente activo para la venta (Criterio de Aceptación 5).
+                    </div>
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg px-4 me-2">
+                            <i class="bi bi-trash-fill"></i> Sí, Eliminar de todas formas
+                        </button>
+                        <a href="{% url 'gestion:ruta_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                            Cancelar
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

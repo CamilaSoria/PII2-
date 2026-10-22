@@ -1,0 +1,149 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="font-family: 'Segoe UI', system-ui, sans-serif;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded shadow-sm border-start border-primary border-4">
+        <div>
+            <h2 class="h4 mb-1 text-dark fw-bold">📍 Gestión de Destinos Turísticos</h2>
+            <p class="text-muted small mb-0">Administra los destinos globales, portadas y configuraciones de mapas.</p>
+        </div>
+        <a href="{% url 'gestion:destino_create' %}" class="btn btn-primary px-4 fw-bold rounded-pill shadow-sm">
+            ➕ Añadir Nuevo Destino
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary small uppercase fw-bold">
+                    <tr>
+                        <th class="ps-4" style="width: 80px;">Foto</th>
+                        <th>Nombre</th>
+                        <th>Ubicación</th>
+                        <th>Tipo</th>
+                        <th>Clima</th>
+                        <th>Estado</th>
+                        <th class="text-end px-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for destino in destinos %}
+                    <tr>
+                        <td class="ps-4">
+                            {% if destino.imagenes_galeria.exists %}
+                                <div class="position-relative-hover content-foto" style="width: 55px; height: 45px;">
+                                    <img src="{{ destino.imagenes_galeria.all.0.imagen.url }}" 
+                                         class="rounded shadow-sm border img-fluid w-100 h-100" 
+                                         style="object-fit: cover;" 
+                                         alt="Portada">
+                                </div>
+                            {% else %}
+                                <div class="bg-light rounded border border-dashed d-flex align-items-center justify-content-center text-muted shadow-sm" style="width: 55px; height: 45px; font-size: 11px;">
+                                    🗺️
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <strong class="text-dark d-block mb-0">{{ destino.nombre }}</strong>
+                            {% if destino.imagenes_galeria.exists %}
+                                <button type="button" 
+                                        class="badge bg-secondary border-0 text-white mt-1 px-2 py-1 rounded-pill" 
+                                        style="font-size: 10px; cursor: pointer; transition: background 0.2s;"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalGaleria"
+                                        data-nombre="{{ destino.nombre }}"
+                                        data-fotos='[{% for img in destino.imagenes_galeria.all %}"{{ img.imagen.url }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+                                        onmouseover="this.className='badge bg-primary border-0 text-white mt-1 px-2 py-1 rounded-pill'"
+                                        onmouseout="this.className='badge bg-secondary border-0 text-white mt-1 px-2 py-1 rounded-pill'">
+                                    📸 Ver Galería ({{ destino.imagenes_galeria.count }})
+                                </button>
+                            {% else %}
+                                <span class="text-muted d-block" style="font-size: 11px;">Sin fotos secundarias</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td>{{ destino.ubicacion|default:"No especificada" }}</td>
+                        <td>
+                            {% if destino.tipo == 'urbano' %}
+                                <span class="badge bg-info text-dark rounded-pill px-3">Urbano 🏙️</span>
+                            {% elif destino.tipo == 'natural' %}
+                                <span class="badge bg-success rounded-pill px-3">Natural 🌲</span>
+                            {% elif destino.tipo == 'cultural' %}
+                                <span class="badge bg-warning text-dark rounded-pill px-3">Cultural 🏛️</span>
+                            {% elif destino.tipo == 'gastronomico' %}
+                                <span class="badge bg-danger rounded-pill px-3">Gastronómico 🍲</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="text-secondary small fw-medium">{{ destino.clima }}</span></td>
+                        <td>
+                            {% if destino.esta_activo %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 rounded">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 rounded">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end px-4">
+                            <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                                <a href="{% url 'gestion:destino_update' destino.pk %}" class="btn btn-sm btn-white border border-end-0 px-3 text-primary">
+                                    ✏️ Editar
+                                </a>
+                                <a href="{% url 'gestion:destino_delete' destino.pk %}" class="btn btn-sm btn-white border px-3 text-danger">
+                                    🗑️ Borrar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <div class="fs-4 mb-2">📭</div>
+                            No hay destinos registrados en el sistema. ¡Comienza creando uno nuevo!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGaleria" tabindex="-1" aria-labelledby="modalGaleriaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title h6 fw-bold mb-0" id="modalGaleriaLabel">📸 Galería de Fotos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 bg-light">
+                <div id="carruselDestino" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="contenedorFotosModal" style="height: 340px;">
+                        </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carruselDestino" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-dark bg-opacity-50 rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carruselDestino" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-dark bg-opacity-50 rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/modal_galeria.js' %}"></script>
+{% endblock %}

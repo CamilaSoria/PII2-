@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Proponer Punto de Interés - SRTI-LP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade-in">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-0">
+                <h4 class="card-title mb-0 fw-bold text-primary">📌 Proponer Nuevo Atractivo Turístico</h4>
+                <p class="text-muted small mb-0">Ayuda a la comunidad co-creando el catálogo de La Paz. Tu propuesta pasará por la cola de revisión de un moderador.</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre del Lugar</label>
+                        {{ form.nombre }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descripción Semántica (Detallada)</label>
+                        {{ form.descripcion }}
+                        <div class="form-text text-muted">Describe la historia, el clima o detalles clave. El Core Inteligente usará este texto para calcular recomendaciones TF-IDF.</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Latitud</label>
+                            {{ form.latitud }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Longitud</label>
+                            {{ form.longitud }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Altitud (m s. n. m.)</label>
+                            {{ form.altitud_m }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Categoría</label>
+                            {{ form.categoria }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Imagen Principal</label>
+                            {{ form.imagen_principal }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="reset" class="btn btn-light px-4">Limpiar</button>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">Enviar a Moderación</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

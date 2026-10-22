@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRTI-LP | Sistema de Recomendación Turística Inteligente La Paz</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+    <header class="relative bg-slate-900 text-white min-h-[90vh] flex items-center justify-center overflow-hidden">
+        <nav class="absolute top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+            <span class="text-white font-black text-lg tracking-tight">SRTI <span class="text-blue-400">LP</span></span>
+            <div class="flex gap-3">
+                <a href="{% url 'authentication:login' %}" 
+                class="bg-white/10 hover:bg-white/20 text-white text-sm font-semibold px-5 py-2 rounded-xl border border-white/20 backdrop-blur-sm transition-all duration-200">
+                    Iniciar sesión
+                </a>
+                <a href="{% url 'authentication:registro' %}" 
+                class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2 rounded-xl transition-all duration-200">
+                    Registrarse
+                </a>
+            </div>
+        </nav>
+        <div class="absolute inset-0 z-0 opacity-35 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1920&q=80');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/80 to-slate-50 z-0"></div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 mt-8">
+            <span class="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 text-xs sm:text-sm font-semibold tracking-wider uppercase px-4 py-1.5 rounded-full border border-blue-500/30 backdrop-blur-md">
+                LOS ANDES
+            </span>
+            <h1 class="mt-6 text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 leading-tight drop-shadow-md">
+                Descubre La Paz como <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-amber-400">nunca antes la imaginaste</span>
+            </h1>
+            <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Planes inteligentes y paquetes turísticos personalizados. Explora desde la magia arqueológica de Tiwanaku hasta los paisajes extremos del Valle de la Luna con confirmación y reservas inmediatas en tiempo real.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#paquetes" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-blue-600/20 transition-all duration-200 transform hover:-translate-y-0.5 text-center">
+                    Ver Paquetes Destacados
+                </a>
+                <a href="#cotizar" class="bg-white/10 hover:bg-white/20 text-white font-semibold py-3.5 px-8 rounded-xl backdrop-blur-sm border border-white/20 transition-all duration-200 text-center">
+                    Reservar / Cotizar Ahora
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 flex items-start gap-4 transform hover:-translate-y-1 transition-transform duration-300">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-xl">🗺️</div>
+                <div>
+                    <h3 class="font-bold text-lg text-slate-900">Filtrado Híbrido</h3>
+                    <p class="text-slate-600 text-sm mt-1">Algoritmos basados en contenido (TF-IDF) y similitudes colaborativas que se adaptan con precisión a tu perfil de viajero.</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 flex items-start gap-4 transform hover:-translate-y-1 transition-transform duration-300">
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-xl">🛡️</div>
+                <div>
+                    <h3 class="font-bold text-lg text-slate-900">Transacciones ACID</h3>
+                    <p class="text-slate-600 text-sm mt-1">Bloqueo de inventario hotelero y cupos en tiempo real mediante base de datos centralizada segura para prevenir sobreventas.</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 flex items-start gap-4 transform hover:-translate-y-1 transition-transform duration-300">
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-xl font-bold text-xl">📍</div>
+                <div>
+                    <h3 class="font-bold text-lg text-slate-900">Joyas Ocultas y Co-creación</h3>
+                    <p class="text-slate-600 text-sm mt-1">Explora e impulsa nuevos Puntos de Interés (POIs) georreferenciados validados minuciosamente por nuestro equipo editorial.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="paquetes" class="py-20 bg-slate-100/70 border-y border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl tracking-tight">Nuestros Paquetes Recomendados</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-slate-600 text-base sm:text-lg">Selección inteligente basada en las calificaciones y los atractivos más emblemáticos de nuestra región.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for paquete in paquetes %}
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200/60 flex flex-col justify-between hover:shadow-xl transition-all duration-300 group">
+                    <div>
+                        <div class="h-52 w-full bg-slate-200 relative overflow-hidden">
+                            {% if paquete.imagen_archivo %}
+                                <img src="{{ paquete.imagen_archivo.url }}" alt="{{ paquete.nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            {% elif paquete.imagen_url %}
+                                <img src="{{ paquete.imagen_url }}" alt="{{ paquete.nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">🌴 Sin imagen disponible</div>
+                            {% endif %}
+                            <span class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-slate-900 font-bold px-3 py-1 rounded-full text-xs shadow-sm flex items-center gap-1">
+                                ⭐ {{ paquete.calificacion_promedio|default:"5.0" }}
+                            </span>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100/50">
+                                    {{ paquete.categoria.nombre|default:"Turismo Receptivo" }}
+                                </span>
+                                <span class="text-xs text-slate-500 font-medium flex items-center gap-1">
+                                    ⏱️ {{ paquete.duracion_dias }} días
+                                </span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">{{ paquete.nombre }}</h3>
+                            <p class="text-slate-600 text-sm mb-4 line-clamp-3 leading-relaxed">{{ paquete.descripcion }}</p>
+
+                            {% if paquete.pois.all %}
+                            <div class="mt-4 pt-4 border-t border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Puntos de Interés Incluidos:</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    {% for poi in paquete.pois.all %}
+                                    <span class="bg-amber-50 text-amber-800 text-[11px] px-2.5 py-0.5 rounded-full font-medium border border-amber-200/40 shadow-2xs">
+                                        📍 {{ poi.nombre }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Precio Total</span>
+                            <span class="text-2xl font-black text-slate-900">${{ paquete.precio }}</span>
+                        </div>
+                        <a href="#cotizar" class="bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 shadow-sm">
+                            Me Interesa
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16 bg-white rounded-2xl border-2 border-dashed border-slate-300 px-4">
+                    <div class="text-4xl mb-3">🏔️</div>
+                    <p class="text-slate-500 font-medium">No hay paquetes turísticos activos en el inventario de La Paz por ahora.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="cotizar" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+            <span class="text-blue-600 font-bold text-xs tracking-widest uppercase bg-blue-50 px-3 py-1 rounded-full border border-blue-100">¿Listo para tu próxima aventura?</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-4 mb-6 tracking-tight leading-tight">Registra tu solicitud y asegura tu cupo de forma inmediata</h2>
+            <p class="text-slate-600 mb-6 leading-relaxed text-base">
+                Completa el formulario de reserva técnica. Al presionar el botón, nuestro motor transaccional ejecutará un bloqueo de inventario preventivo (<code class="bg-slate-100 text-pink-600 px-1.5 py-0.5 rounded text-sm font-mono">SELECT FOR UPDATE</code>) en nuestra base de datos para garantizar que tus plazas hoteleras queden resguardadas mientras procesamos tu orden de pago segura.
+            </p>
+            <div class="space-y-3 bg-slate-100/60 p-5 rounded-2xl border border-slate-200/50">
+                <p class="flex items-center gap-2.5 text-sm text-slate-600 font-medium">✅ <span class="text-slate-700 font-bold">Consistencia Transaccional:</span> Garantía de cupo cero sobreventas.</p>
+                <p class="flex items-center gap-2.5 text-sm text-slate-600 font-medium">✅ <span class="text-slate-700 font-bold">Seguridad Cifrada:</span> Transacciones validadas mediante firma HMAC-SHA256.</p>
+                <p class="flex items-center gap-2.5 text-sm text-slate-600 font-medium">✅ <span class="text-slate-700 font-bold">Políticas Transparentes:</span> Registro local sin cargos iniciales ocultos.</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-100/80 relative">
+            <div class="absolute top-0 right-8 transform -translate-y-1/2 bg-amber-400 text-slate-950 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-md shadow-sm">
+                Módulo Transaccional v1.0
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-1">Ingresa tus datos de viaje</h3>
+            <p class="text-xs text-slate-400 mb-6 font-medium">Todos los campos se mapean directamente con el modelo de base de datos de reservas.</p>
+
+            <form method="POST" action="" class="space-y-4">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="flex flex-col">
+                        <label class="block text-slate-700 text-xs font-bold uppercase tracking-wider mb-1.5">
+                            {{ field.label }}
+                        </label>
+                        <div class="django-field-container [&>input]:w-full [&>input]:bg-slate-50 [&>input]:border [&>input]:border-slate-300 [&>input]:rounded-xl [&>input]:px-4 [&>input]:py-2.5 [&>input]:text-sm [&>input]:transition-all [&>input]:duration-200 [&>input]:focus:outline-hidden [&>input]:focus:ring-2 [&>input]:focus:ring-blue-500/20 [&>input]:focus:border-blue-500 [&>select]:w-full [&>select]:bg-slate-50 [&>select]:border [&>select]:border-slate-300 [&>select]:rounded-xl [&>select]:px-4 [&>select]:py-2.5 [&>select]:text-sm">
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                            <p class="text-red-500 text-xs mt-1.5 font-semibold flex items-center gap-1">⚠️ {{ field.errors.0 }}</p>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <span class="text-[11px] text-slate-400 mt-1 leading-normal">{{ field.help_text }}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-blue-600/10 transition-all duration-200 transform active:scale-[0.99] cursor-pointer text-center text-sm uppercase tracking-wider">
+                    Enviar Mi Solicitud a Gestión (CU-03)
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-slate-400 text-center py-10 border-t border-slate-800 text-xs sm:text-sm">
+        <div class="max-w-7xl mx-auto px-4 space-y-3">
+            <p class="font-semibold text-slate-300">SRTI-LP v1.0 — Módulo de Capa de Presentación (Frontend)</p>
+            <p>&copy; 2026 Sistema de Recomendación Turística Inteligente - Proyecto de Ingeniería de Sistemas (ISI-511).</p>
+            <p class="text-slate-600 text-[11px]">Desplegado estáticamente bajo directrices académicas de la Universidad Franz Tamayo.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Turista</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center px-4 py-10">
+
+<div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 sm:p-10">
+    <h2 class="text-2xl font-black text-slate-900 mb-1">Crea tu cuenta</h2>
+    <p class="text-sm text-slate-500 mb-6">Selecciona tus preferencias para personalizar tu viaje.</p>
+
+    <form action="{% url 'authentication:registro' %}" method="post" id="registroForm" class="space-y-4">
+        {% csrf_token %}
+        <div id="form-fields" class="space-y-4 [&_p]:flex [&_p]:flex-col [&_p]:gap-1 [&_label]:text-xs [&_label]:font-bold [&_label]:uppercase [&_label]:tracking-wider [&_label]:text-slate-600 [&_input]:w-full [&_input]:bg-slate-50 [&_input]:border [&_input]:border-slate-300 [&_input]:rounded-xl [&_input]:px-4 [&_input]:py-2.5 [&_input]:text-sm [&_select]:w-full [&_select]:bg-slate-50 [&_select]:border [&_select]:border-slate-300 [&_select]:rounded-xl [&_select]:px-4 [&_select]:py-2.5 [&_select]:text-sm [&_ul]:text-xs [&_ul]:text-red-500 [&_ul]:mt-1">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" id="btnGuardar"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all duration-200 text-sm uppercase tracking-wider shadow-md shadow-blue-600/10 mt-2">
+            Registrarme
+        </button>
+    </form>
+
+    <p class="text-center text-sm text-slate-500 mt-6">
+        ¿Ya tienes cuenta?
+        <a href="{% url 'authentication:login' %}" class="text-blue-600 font-semibold hover:underline">Inicia sesión aquí</a>
+    </p>
+</div>
+
+</body>
+</html>

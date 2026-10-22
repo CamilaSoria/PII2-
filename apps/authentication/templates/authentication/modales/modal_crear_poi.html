@@ -1,0 +1,81 @@
+<div class="modal fade" id="modalCrearPOI" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modalCrearPOILabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalCrearPOILabel">✨ Proponer Nueva Joya Oculta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'authentication:crear_joya_oculta' %}" method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                <div class="modal-body">
+                    <p class="text-muted small">Ayuda a la agencia a descubrir rincones únicos. Tu propuesta pasará por revisión editorial antes de publicarse.</p>
+
+                    <div class="modal-body">
+        
+                        <div class="card bg-light border-0 p-3 mb-3">
+                            <label class="form-label fw-bold text-dark">📸 Añade una foto por cualquiera de estos métodos:</label>
+                            
+                            <div class="mb-3">
+                                <label class="form-label small text-secondary fw-semibold">📁 Opción 1: Subir archivo o Tomar Foto con la Cámara</label>
+                                <input type="file" name="imagen_archivo" class="form-control" accept="image/*">
+                            </div>
+
+                            <div class="text-center my-2">
+                                <span class="badge bg-secondary">Ó</span>
+                            </div>
+
+                            <div>
+                                <label class="form-label small text-secondary fw-semibold">🔗 Opción 2: Pegar link/URL de internet</label>
+                                <input type="url" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/foto.jpg">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre del lugar</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Cascada Secreta de las Hadas" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">🏷️ Categoría de la Joya Oculta</label>
+                        <select name="categoria" class="form-select" required>
+                            <option value="Naturaleza" selected>🌲 Naturaleza</option>
+                            <option value="Aventura">🧗‍♂️ Aventura</option>
+                            <option value="Gastronomía">🍲 Gastronomía</option>
+                            <option value="Cultural">🏛️ Cultural</option>
+                            <option value="Mirador">📸 Mirador</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">¿Por qué es especial? (Descripción)</label>
+                        <textarea name="descripcion" class="form-control" rows="3" placeholder="Describe qué la hace una joya oculta..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">¿Cómo llegar o dónde queda?</label>
+                        <input type="text" name="referencia_ubicacion" class="form-control" placeholder="Ej: Detrás de la vieja iglesia de San Juan, cruzando el puente de madera." required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label small text-muted">Latitud (Simulada)</label>
+                            <input type="number" step="any" name="latitud" class="form-control form-control-sm" placeholder="Ej: -16.5000">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small text-muted">Longitud (Simulada)</label>
+                            <input type="number" step="any" name="longitud" class="form-control form-control-sm" placeholder="Ej: -68.1500">
+                        </div>
+                            <div class="mb-3">
+                            <label class="form-label fw-bold text-success">🗺️ Selecciona la ubicación en el mapa</label>
+                            <div id="mapaCrear" style="height: 300px; width: 100%;" class="rounded border shadow-sm"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Enviar Propuesta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

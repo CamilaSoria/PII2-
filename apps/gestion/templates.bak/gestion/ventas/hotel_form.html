@@ -1,0 +1,206 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Hoteles · SRTI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{% if form.instance.pk %}Editar hotel{% else %}Nuevo hotel{% endif %}</h1>
+        <p class="page-subtitle">Oferta hotelera e inventario de habitaciones.</p>
+    </div>
+    <a href="{% url 'gestion:hotel_list' %}" class="btn-ghost">Volver al listado</a>
+</div>
+
+{% if form.non_field_errors or formset.non_form_errors %}
+<div class="alert alert-danger" role="alert">
+    <strong class="d-block mb-1">Revisa los siguientes errores:</strong>
+    {% for error in form.non_field_errors %}<div class="small">{{ error }}</div>{% endfor %}
+    {% for error in formset.non_form_errors %}<div class="small">{{ error }}</div>{% endfor %}
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <div class="row g-4">
+        <!-- Columna izquierda -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <h2 class="section-title">Datos generales</h2>
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre comercial</label>
+                    {{ form.nombre }}
+                    {% if form.nombre.errors %}<div class="field-error">{{ form.nombre.errors|striptags }}</div>{% endif %}
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Destino asociado</label>
+                        {{ form.destino }}
+                        {% if form.destino.errors %}<div class="field-error">{{ form.destino.errors|striptags }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estrellas</label>
+                        {{ form.calificacion_estrellas }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Dirección o referencia</label>
+                    {{ form.direccion }}
+                    {% if form.direccion.errors %}<div class="field-error">{{ form.direccion.errors|striptags }}</div>{% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Descripción breve</label>
+                    {{ form.descripcion }}
+                </div>
+
+                <div class="section-head">
+                    <h2 class="section-title">Comodidades</h2>
+                    <a href="{% url 'gestion:servicio_create' %}" class="btn-row">Añadir nueva</a>
+                </div>
+                <div class="chip-grid mb-4">
+                    {% for checkbox in form.servicios %}
+                    <div>
+                        <input type="checkbox" class="btn-check"
+                               name="{{ checkbox.data.name }}"
+                               value="{{ checkbox.data.value }}"
+                               id="id_servicio_{{ checkbox.data.value }}"
+                               {% if checkbox.data.selected %}checked{% endif %}>
+                        <label class="chip-label" for="id_servicio_{{ checkbox.data.value }}">{{ checkbox.choice_label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="section-head">
+                    <h2 class="section-title">Habitaciones y precios</h2>
+                    <button type="button" id="btn-agregar-habitacion" class="btn-row">Añadir tipo</button>
+                </div>
+
+                {{ formset.management_form }}
+                <div id="contenedor-habitaciones" style="max-height: 260px; overflow-y: auto; overflow-x: hidden; padding-right: 4px;">
+
+                    <div id="plantilla-habitacion" class="d-none row g-2 mb-2 align-items-center item-habitacion">
+                        <div class="col-6"><input type="text" data-name="tipos_habitacion-__prefix__-nombre" class="form-control form-control-sm" placeholder="Ej. Suite ejecutiva"></div>
+                        <div class="col-2"><input type="number" data-name="tipos_habitacion-__prefix__-capacidad_personas" class="form-control form-control-sm" min="1" placeholder="Pax"></div>
+                        <div class="col-3"><input type="number" data-name="tipos_habitacion-__prefix__-precio_por_noche" class="form-control form-control-sm" step="0.01" placeholder="Precio/noche"></div>
+                        <div class="col-1 text-center"><button type="button" class="btn-text-danger btn-remover" title="Quitar">×</button></div>
+                    </div>
+
+                    {% for f in formset %}
+                    <div class="row g-2 mb-2 align-items-center item-habitacion">
+                        {{ f.id }}
+                        <div class="col-6">
+                            {{ f.nombre }}
+                            {% if f.nombre.errors %}<div class="field-error">{{ f.nombre.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-2">
+                            {{ f.capacidad_personas }}
+                            {% if f.capacidad_personas.errors %}<div class="field-error">{{ f.capacidad_personas.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-3">
+                            {{ f.precio_por_noche }}
+                            {% if f.precio_por_noche.errors %}<div class="field-error">{{ f.precio_por_noche.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="col-1 text-center">
+                            {% if formset.can_delete %}
+                                <div class="form-check d-none">{{ f.DELETE }}</div>
+                                <button type="button" class="btn-text-danger btn-remover-existente" title="Quitar">×</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <h2 class="section-title">Ubicación</h2>
+                <p class="section-hint">Busca un lugar o haz clic en el mapa para capturar las coordenadas del hotel.</p>
+
+                <div class="d-flex gap-2 mb-3">
+                    <input type="text" id="inputBuscarHotel" class="form-control" placeholder="Buscar lugar">
+                    <button type="button" id="btnBuscarHotel" class="btn-ghost">Buscar</button>
+                </div>
+
+                <div id="mapaHotelAgente" class="map-box mb-3"
+                     data-lat="{% if form.instance.latitud %}{{ form.instance.latitud }}{% else %}-33.4569{% endif %}"
+                     data-lon="{% if form.instance.longitud %}{{ form.instance.longitud }}{% else %}-70.6483{% endif %}"></div>
+
+                <div class="subpanel mb-4">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Latitud</label>
+                            {{ form.latitud }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Longitud</label>
+                            {{ form.longitud }}
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Galería</h2>
+                <label class="form-label">Fotos del establecimiento</label>
+                {{ form.imagenes_multiples }}
+
+                {% if hotel and hotel.imagenes.exists %}
+                <div class="gallery mt-2">
+                    {% for img in hotel.imagenes.all %}
+                    <div class="foto-item card-foto-galeria" id="foto-wrapper-{{ img.id }}">
+                        <img src="{% if img.imagen_archivo %}{{ img.imagen_archivo.url }}{% else %}{{ img.imagen_url }}{% endif %}"
+                             alt=""
+                             {% if img.es_principal %}style="border: 2px solid var(--accent);"{% endif %}>
+                        <div class="foto-actions opacity-actions">
+                            <button type="button" class="foto-btn btn-hacer-portada-hotel"
+                                    data-url="{% url 'gestion:asignar_portada_hotel' hotel.id img.id %}">
+                                {% if img.es_principal %}Portada actual{% else %}Portada{% endif %}
+                            </button>
+                            <button type="button" class="foto-btn foto-btn-danger btn-borrar-foto-hotel"
+                                    data-id="{{ img.id }}"
+                                    data-url="{% url 'gestion:eliminar_foto_hotel' img.id %}">Eliminar</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div id="preview-container" class="gallery gallery-center mt-2">
+                    <span class="text-muted small" id="preview-placeholder">Las fotos nuevas se mostrarán aquí</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions form-actions-split">
+        <div class="form-check form-switch m-0">
+            {{ form.esta_activo }}
+            <label class="form-check-label" for="id_esta_activo">Alojamiento disponible</label>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'gestion:hotel_list' %}" class="btn-ghost">Cancelar</a>
+            <button type="submit" class="btn-accent">Guardar hotel</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/mapa_poi.js' %}"></script>
+<script src="{% static 'js/preview_images.js' %}"></script>
+<script src="{% static 'js/hoteles_habitacion.js' %}"></script>
+<script>
+    window.dispatchEvent(new Event('resize'));
+    document.getElementById('inputBuscarHotel').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('btnBuscarHotel').click();
+        }
+    });
+</script>
+{% endblock %}

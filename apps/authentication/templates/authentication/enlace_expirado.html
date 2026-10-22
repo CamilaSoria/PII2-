@@ -1,0 +1,13 @@
+<div class="error-container">
+    <h2>⏰ ¡Tu enlace de activación ha expirado!</h2>
+    <p>Por motivos de seguridad, los enlaces de verificación solo son válidos durante 24 horas.</p>
+    
+    <form action="{% url 'authentication:reenviar_enlace' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="token_viejo" value="{{ token_viejo }}">
+        <button type="submit" class="btn-primary">Reenviar un nuevo enlace de verificación</button>
+    </form>
+    
+    <br>
+    <a href="{% url 'authentication:login' %}" class="btn-secondary">Volver al Iniciar Sesión</a>
+</div>

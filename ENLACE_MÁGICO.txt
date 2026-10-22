@@ -1,0 +1,2 @@
+Enlace de restablecimiento para camila@gmail.com:
+http://localhost:8000/auth/restablecer/camila@gmail.com:1wY3Hr:A8DQH6d1zUsfR3TCQM4qpFgfPTUjpT1x2pZ7tLN3WKs/

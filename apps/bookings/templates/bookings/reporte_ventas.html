@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserva Confirmada - SRTI-LP{% endblock %}
+
+{% block content %}
+<div>
+    <div>
+        <div>
+            <div>
+                <h4>¡Transacción Exitosa!</h4>
+                <p>Reserva procesada bajo el protocolo de seguridad transaccional ACID.</p>
+            </div>
+            
+            <div>
+                <div>
+                    <span>Monto Total Debitado</span>
+                    <h2>BOB {{ Central.monto_total|default:reserva.monto_total }}</h2>
+                    <span>Estado: Pago Confirmado</span>
+                </div>
+
+                <hr>
+
+                <h5>Detalles del Paquete Turístico</h5>
+                <div>
+                    <div>
+                        <span>Paquete Adquirido:</span>
+                        <strong>{{ reserva.paquete.nombre }}</strong>
+                    </div>
+                    <div>
+                        <span>Fecha del Viaje:</span>
+                        <strong>{{ reserva.fecha_viaje }}</strong>
+                    </div>
+                    <div>
+                        <span>Cantidad de Pasajeros / Cupos:</span>
+                        <strong>{{ reserva.cantidad_pasajeros }} Persona(s)</strong>
+                    </div>
+                    <div>
+                        <span>Alojamiento Incluido:</span>
+                        <strong>
+                            {% if reserva.habitacion_inventario %}
+                                {{ reserva.habitacion_inventario.hotel.nombre }} ({{ reserva.habitacion_inventario.tipo_habitacion }})
+                            {% else %}
+                                No incluye hotel
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div>
+                    <h6>Metadatos de Seguridad Bancaria</h6>
+                    <div>
+                        <div><strong>ID de Transacción:</strong> <code>{{ reserva.transaccion_pago_id }}</code></div>
+                        <div><strong>Cliente Titular:</strong> {{ reserva.usuario.email }}</div>
+                        <div><strong>Fecha Registro:</strong> {{ reserva.fecha_reserva }}</div>
+                    </div>
+                </div>
+
+                <div>
+                    <button onclick="window.print();">
+                        Imprimir Comprobante Digital
+                    </button>
+                    <a href="/catalogo/proponer-poi/">
+                        Volver al Catálogo de La Paz
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

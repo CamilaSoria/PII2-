@@ -1,0 +1,23 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px; font-family: 'Segoe UI', system-ui, sans-serif;">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4 text-center">
+            <div class="text-danger mb-3">
+                <i class="fas fa-exclamation-triangle fa-3x"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">¿Eliminar Servicio?</h4>
+            <p class="text-muted small">Estás a punto de borrar el servicio <strong>"{{ object.nombre }}"</strong>. Esta acción no se puede deshacer y lo quitará de los hoteles que lo usen.</p>
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{% url 'gestion:servicio_list' %}" class="btn btn-light border btn-sm px-4">Cancelar</a>
+                    <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm">Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

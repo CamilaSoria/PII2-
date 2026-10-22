@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserva Confirmada - SRTI-LP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade-in py-4">
+    <div class="col-md-7">
+        <div class="card shadow border-0 overflow-hidden">
+            <div class="card-header bg-success text-white text-center py-4 border-0">
+                <div class="display-4 mb-2">🛡️</div>
+                <h4 class="fw-bold mb-1">¡Transacción Exitosa!</h4>
+                <p class="mb-0 small text-white-50">Reserva procesada bajo el protocolo de seguridad transaccional ACID.</p>
+            </div>
+            
+            <div class="card-body p-4 bg-white">
+                <div class="text-center mb-4">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Monto Total Debitado</span>
+                    <h2 class="fw-extrabold text-dark mb-0">BOB {{ Central.monto_total|default:reserva.monto_total }}</h2>
+                    <span class="badge bg-light text-success border border-success px-3 py-1 mt-2">Estado: Pago Confirmado</span>
+                </div>
+
+                <hr class="text-muted opacity-25">
+
+                <h5 class="fw-bold text-secondary mb-3">Detalles del Paquete Turístico</h5>
+                <div class="row g-3 small mb-4">
+                    <div class="col-6">
+                        <span class="text-muted d-block">Paquete Adquirido:</span>
+                        <strong class="text-dark">{{ reserva.paquete.nombre }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted d-block">Fecha del Viaje:</span>
+                        <strong class="text-dark">{{ reserva.fecha_viaje }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted d-block">Cantidad de Pasajeros / Cupos:</span>
+                        <strong class="text-dark">{{ reserva.cantidad_pasajeros }} Persona(s)</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted d-block">Alojamiento Incluido:</span>
+                        <strong class="text-dark">
+                            {% if reserva.habitacion_inventario %}
+                                🏢 {{ reserva.habitacion_inventario.hotel.nombre }} ({{ reserva.habitacion_inventario.tipo_habitacion }})
+                            {% else %}
+                                ❌ No incluye hotel
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+
+                <hr class="text-muted opacity-25">
+
+                <div class="bg-light p-3 rounded mb-4">
+                    <h6 class="fw-bold text-dark mb-2 small text-uppercase">Metadatos de Seguridad Bancaria</h6>
+                    <div class="row g-2 text-muted" style="font-size: 0.85rem;">
+                        <div class="col-12">🔑 <strong>ID de Transacción:</strong> <code class="text-primary">{{ reserva.transaccion_pago_id }}</code></div>
+                        <div class="col-12">👤 <strong>Cliente Titular:</strong> {{ reserva.usuario.email }}</div>
+                        <div class="col-12">📅 <strong>Fecha Registro:</strong> {{ reserva.fecha_reserva }}</div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button onclick="window.print();" class="btn btn-outline-dark fw-bold btn-sm">
+                        🖨️ Imprimir Comprobante Digital
+                    </button>
+                    <a href="/catalogo/proponer-poi/" class="btn btn-primary fw-bold btn-sm">
+                        Volver al Catálogo de La Paz
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

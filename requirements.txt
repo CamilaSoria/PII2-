@@ -1,0 +1,8 @@
+asgiref==3.12.1
+Django==5.0.6
+django-admin-interface==0.32.0
+django-colorfield==0.14.0
+pillow==12.3.0
+python-slugify==8.0.4
+sqlparse==0.6.0
+text-unidecode==1.3

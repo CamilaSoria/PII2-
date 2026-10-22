@@ -1,0 +1,41 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Añadir Comodidad - SRTI{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px; font-family: 'Segoe UI', system-ui, sans-serif;">
+    
+    <div class="d-flex align-items-center mb-4 p-3 bg-white rounded shadow-sm border-start border-warning border-4">
+        <div>
+            <h2 class="h4 mb-1 text-dark fw-bold">✨ Nueva Comodidad / Servicio</h2>
+            <p class="text-muted small mb-0">Registra características globales para los hoteles (Ej: Wifi, Piscina, Spa).</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small">Nombre del Servicio</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Ej. Piscina Climatizada o Spa de Lujo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small">Ícono de FontAwesome (Opcional)</label>
+                    <input type="text" name="icono" class="form-control" placeholder="Ej. fas fa-swimming-pool o fas fa-wifi">
+                    <div class="form-text text-muted" style="font-size: 11px;">
+                        Usa las clases de <a href="https://fontawesome.com/v5/search?m=free" target="_blank" class="text-primary text-decoration-none fw-bold">FontAwesome v5 (Free)</a>.
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'gestion:hotel_list' %}" class="btn btn-light btn-sm px-3 border">Cancelar</a>
+                    <button type="submit" class="btn btn-warning btn-sm px-4 fw-bold text-dark shadow-sm">💾 Guardar Servicio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

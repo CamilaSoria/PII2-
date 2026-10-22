@@ -1,0 +1,34 @@
+<div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalHistorialLabel">🗺️ Historial de Viajes Contratados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 65vh; overflow-y: auto;">
+                
+                {% for r in reservas_historicas %}
+                    <div class="card bg-light border-start border-secondary border-4 mb-2">
+                        <div class="card-body py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-dark">📍 {{ r.paquete.nombre }}</strong> 
+                                    <span class="text-muted small ms-2">(RES-00{{ r.id_reserva }})</span>
+                                    <br>
+                                    <small class="text-muted">📅 {{ r.fecha_viaje|date:"d M, Y" }}</small>
+                                </div>
+                                <span class="badge bg-secondary">{{ r.estado_pago }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted italic text-center py-4 my-0">Aún no has completado ningún viaje con nosotros.</p>
+                {% endfor %}
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar Historial</button>
+            </div>
+        </div>
+    </div>
+</div>

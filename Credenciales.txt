@@ -1,0 +1,25 @@
+(venv) PS C:\Users\CAMI\Documents\Tareas\5t0 semestre\Proyecto Integrador\CAMILASORIA-H4-COD> python manage.py createsuperuser
+Email: soria@gmail.com
+Nombre: Cami
+Apellido: Sori
+Password:soria
+
+Superuser created successfully.
+(venv) PS C:\Users\CAMI\Documents\Tareas\5t0 semestre\Proyecto Integrador\CAMILASORIA-H4-COD> 
+
+python manage.py runserver
+
+http://127.0.0.1:8000/auth/password-reset/
+
+calamardo@gmail.com
+bobesponja7
+
+Mailpit: 
+cd C:\
+cd Mailpit
+./mailpit.exe
+
+python manage.py makemigrations
+python manage.py migrate
+
+python manage.py runserver

@@ -1,0 +1,182 @@
+/* --- CONFIGURACIÓN BASE --- */
+:root {
+    --primary: #2b6cb0;
+    --primary-hover: #1a365d;
+    --dark: #2d3748;
+    --light-bg: #f7fafc;
+    --border-color: #e2e8f0;
+    --success: #38a169;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark);
+    margin: 0;
+    padding: 0;
+}
+
+.container-detalle {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+/* En pantallas chicas se vuelve una sola columna */
+@media (max-width: 992px) {
+    .container-detalle {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- DISEÑO DE TARJETAS / BLOQUES --- */
+.card-bloque {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--primary-hover);
+}
+
+/* --- BADGES Y CARACTERÍSTICAS --- */
+.badge-categoria {
+    background-color: var(--dark);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.grid-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.feature-item {
+    background: var(--light-bg);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.feature-item strong {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+/* --- GALERÍA MÚLTIPLE DE IMÁGENES --- */
+.galeria-contenedor {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.galeria-item {
+    border-radius: 8px;
+    overflow: hidden;
+    height: 120px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.galeria-item:hover {
+    transform: scale(1.03);
+}
+
+.galeria-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- CRONOGRAMA DE PARADAS (HOJA DE RUTA) --- */
+.timeline-rutas {
+    list-style: none;
+    padding-left: 0;
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 30px;
+    padding-bottom: 20px;
+    border-left: 2px solid var(--primary);
+}
+
+.timeline-item::before {
+    content: '📍';
+    position: absolute;
+    left: -11px;
+    top: 0;
+    background: white;
+    border-radius: 50%;
+}
+
+/* --- COLUMNA DE RESERVA FIJA (STICKY) --- */
+.columna-reserva {
+    position: sticky;
+    top: 30px;
+    height: fit-content;
+}
+
+.input-group-reserva {
+    margin-bottom: 15px;
+}
+
+.input-group-reserva label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.input-group-reserva input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.btn-reserva-submit {
+    width: 100%;
+    background-color: var(--success);
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-reserva-submit:hover {
+    background-color: #2f855a;
+}

@@ -1,0 +1,192 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{% if object %}Editar ruta{% else %}Nueva ruta turística{% endif %}</h1>
+        <p class="page-subtitle">{% if object %}{{ object.nombre }}{% else %}Datos logísticos, paradas y galería.{% endif %}</p>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-card mb-4">
+        <h2 class="section-title">Datos logísticos</h2>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                {{ form.nombre }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.destino.id_for_label }}">{{ form.destino.label }}</label>
+                {{ form.destino }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.origen_logistico.id_for_label }}">{{ form.origen_logistico.label }}</label>
+                {{ form.origen_logistico }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.destino_logistico.id_for_label }}">{{ form.destino_logistico.label }}</label>
+                {{ form.destino_logistico }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.horario_salida.id_for_label }}">{{ form.horario_salida.label }}</label>
+                {{ form.horario_salida }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.horario_retorno.id_for_label }}">{{ form.horario_retorno.label }}</label>
+                {{ form.horario_retorno }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.duracion_estimada.id_for_label }}">{{ form.duracion_estimada.label }}</label>
+                {{ form.duracion_estimada }}
+            </div>
+            <div class="col-12 mb-3">
+                <label class="form-label" for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
+                {{ form.descripcion }}
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    {{ form.esta_activa }}
+                    <label class="form-check-label" for="{{ form.esta_activa.id_for_label }}">Ruta activa</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card mb-4">
+        <div class="section-head">
+            <h2 class="section-title">Paradas intermedias</h2>
+            <button type="button" id="btn-add-parada" class="btn-row">Añadir parada</button>
+        </div>
+
+        <div id="contenedor-paradas">
+            {{ paradas.management_form }}
+
+            {% for form_parada in paradas %}
+            <div class="row align-items-center repeat-row fila-parada">
+                {{ form_parada.id }}
+                <div class="col-md-4">
+                    <label class="form-label">Punto de interés</label>
+                    {{ form_parada.poi }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Orden</label>
+                    {{ form_parada.orden }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Llegada estimada</label>
+                    {{ form_parada.hora_llegada_estimada }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estancia (min)</label>
+                    {{ form_parada.tiempo_permanencia }}
+                </div>
+                <div class="col-md-1 text-center d-none">
+                    {{ form_parada.DELETE }}
+                </div>
+                <div class="col-md-1 text-end mt-4">
+                    <button type="button" class="btn-text-danger btn-remove-parada">Quitar</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div id="parada-template" class="d-none">
+                <div class="row align-items-center repeat-row fila-parada nueva-parada">
+                    <input type="hidden" name="detalles_paradas-__prefix__-id" id="id_detalles_paradas-__prefix__-id">
+                    <div class="col-md-4">
+                        <label class="form-label">Punto de interés</label>
+                        <select name="detalles_paradas-__prefix__-poi" class="form-select select-poi-mapa" id="id_detalles_paradas-__prefix__-poi">
+                            {% for choice in paradas.empty_form.fields.poi.choices %}
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Orden</label>
+                        <input type="number" name="detalles_paradas-__prefix__-orden" class="form-control parada-orden" min="1" id="id_detalles_paradas-__prefix__-orden">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Llegada estimada</label>
+                        <input type="time" name="detalles_paradas-__prefix__-hora_llegada_estimada" class="form-control" id="id_detalles_paradas-__prefix__-hora_llegada_estimada">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Estancia (min)</label>
+                        <input type="number" name="detalles_paradas-__prefix__-tiempo_permanencia" value="30" class="form-control" id="id_detalles_paradas-__prefix__-tiempo_permanencia">
+                    </div>
+                    <div class="col-md-1 text-end mt-4">
+                        <button type="button" class="btn-text-danger btn-remove-parada">Quitar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card mb-4">
+        <h2 class="section-title">Mapa de la ruta</h2>
+        <div id="mapaVistaRuta" class="map-box map-box-lg"></div>
+    </div>
+
+    <div class="form-card mb-4">
+        <div class="section-head">
+            <h2 class="section-title">Galería de fotos</h2>
+            <button type="button" id="btn-add-imagen" class="btn-row">Añadir imagen</button>
+        </div>
+
+        <div id="contenedor-imagenes">
+            {{ imagenes.management_form }}
+
+            {% for form_img in imagenes %}
+            <div class="row align-items-center repeat-row fila-imagen">
+                {{ form_img.id }}
+                <div class="col-md-5">
+                    <label class="form-label">{{ form_img.imagen_url.label }}</label>
+                    {{ form_img.imagen_url }}
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">{{ form_img.imagen_archivo.label }}</label>
+                    {{ form_img.imagen_archivo }}
+                </div>
+                <div class="col-md-1 text-center d-none">
+                    {{ form_img.DELETE }}
+                </div>
+                <div class="col-md-2 text-end mt-4">
+                    <button type="button" class="btn-text-danger btn-remove-imagen">Quitar</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div id="imagen-template" class="d-none">
+                <div class="row align-items-center repeat-row fila-imagen nueva-imagen">
+                    <input type="hidden" name="imagenes_galeria-__prefix__-id" id="id_imagenes_galeria-__prefix__-id">
+                    <div class="col-md-5">
+                        <label class="form-label">URL externa</label>
+                        <input type="url" name="imagenes_galeria-__prefix__-imagen_url" class="form-control" placeholder="https://..." id="id_imagenes_galeria-__prefix__-imagen_url">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Archivo local</label>
+                        <input type="file" name="imagenes_galeria-__prefix__-imagen_archivo" class="form-control" id="id_imagenes_galeria-__prefix__-imagen_archivo">
+                    </div>
+                    <div class="col-md-2 text-end mt-4">
+                        <button type="button" class="btn-text-danger btn-remove-imagen">Quitar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a href="{% url 'gestion:ruta_list' %}" class="btn-ghost">Volver al listado</a>
+        <button type="submit" class="btn-accent">Guardar ruta</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/calculo_duracion.js' %}"></script>
+<script src="{% static 'js/gestion_paradas.js' %}"></script>
+<script src="{% static 'js/gestion_imagenes.js' %}"></script>
+<script src="{% static 'js/mapa_poi.js' %}"></script>
+{% endblock %}

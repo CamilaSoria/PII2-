@@ -1,0 +1,93 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Paquetes turísticos</h1>
+        <p class="page-subtitle">Cotizaciones, rutas e inventario de hospedaje.</p>
+    </div>
+    <a href="{% url 'gestion:crear_paquete' %}" class="btn-accent">Nuevo paquete</a>
+</div>
+
+<div class="panel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 88px;">Portada</th>
+                    <th>Paquete</th>
+                    <th>Destino / Ruta</th>
+                    <th class="text-center">Duración</th>
+                    <th class="text-end">Precio base</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-end" style="width: 160px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paquete in paquetes %}
+                <tr>
+                    <td>
+                        {% with foto=paquete.imagenes_galeria.all.0 %}
+                            {% if foto %}
+                                <img src="{{ foto.imagen.url }}" class="thumb" alt="">
+                            {% else %}
+                                <div class="thumb thumb-empty">Sin foto</div>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        <div class="cell-title">{{ paquete.nombre }}</div>
+                        <div class="cell-desc text-truncate">{{ paquete.descripcion }}</div>
+                    </td>
+                    <td>
+                        <span class="tag">{{ paquete.destino.nombre }}</span>
+                        <div class="text-muted small mt-1">{{ paquete.ruta.nombre|default:"Sin ruta asignada" }}</div>
+                    </td>
+                    <td class="text-center">{{ paquete.duracion_dias }} días</td>
+                    <td class="text-end price">${{ paquete.precio_base }}</td>
+                    <td class="text-center">
+                        {% if paquete.esta_activo %}
+                            <span class="pill pill-on">Activo</span>
+                        {% else %}
+                            <span class="pill pill-off">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'gestion:editar_paquete' paquete.id %}" class="btn-row">Editar</a>
+                            <form action="{% url 'gestion:eliminar_paquete' paquete.id %}" method="post" class="m-0 form-eliminar-paquete">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-row btn-row-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <strong>No hay paquetes registrados</strong>
+                            <p class="small mb-3">Publica tu primer paquete para empezar a venderlo.</p>
+                            <a href="{% url 'gestion:crear_paquete' %}" class="btn-accent">Crear paquete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.form-eliminar-paquete').forEach(form => {
+        form.addEventListener('submit', e => {
+            if (!confirm('¿Eliminar este paquete? Se borrarán de forma permanente su inventario y su galería.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

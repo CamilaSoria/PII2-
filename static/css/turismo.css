@@ -1,0 +1,69 @@
+/* ==========================================================================
+   ESTILOS PREMIUM PARA EL DASHBOARD TURÍSTICO (SRTI)
+   ========================================================================== */
+
+/* 1. Tarjetas con efecto Hover suave (Venta por los ojos) */
+.card-turismo {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                box-shadow 0.3s ease;
+    border: none !important;
+}
+
+.card-turismo:hover {
+    transform: translateY(-5px); /* Eleva la tarjeta sutilmente */
+    box-shadow: 0 10px 20px rgba(30, 58, 138, 0.15) !important; /* Sombra con el azul corporativo */
+}
+
+/* 2. Zoom controlado en la foto del paisaje al pasar el mouse */
+.card-turismo-img-container {
+    overflow: hidden;
+    position: relative;
+}
+
+.card-turismo .card-img-top {
+    transition: transform 0.5s ease;
+}
+
+.card-turismo:hover .card-img-top {
+    transform: scale(1.08);
+}
+
+/* 3. Badge flotante estilizado sobre la imagen */
+.badge-turismo {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+    padding: 6px 12px;
+    font-weight: 700;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* 4. Contenedor de la foto de perfil circular perfecta */
+.avatar-perfil-container {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    transition: transform 0.3s ease;
+}
+
+.avatar-perfil-container:hover {
+    transform: rotate(3deg) scale(1.05);
+}
+
+/* 5. El botón de llamada a la acción (Amarillo Paceño / Naranja) */
+.btn-reserva {
+    background-color: #facc15;
+    color: #0f172a;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-reserva:hover {
+    background-color: #e2b604;
+    color: #000000;
+    transform: scale(1.03);
+}

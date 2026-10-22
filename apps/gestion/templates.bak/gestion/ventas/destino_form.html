@@ -1,0 +1,136 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{% if form.instance.pk %}Editar destino{% else %}Nuevo destino turístico{% endif %}</h1>
+        <p class="page-subtitle">{% if form.instance.pk %}{{ form.instance.nombre }}{% else %}Datos generales, galería y ubicación.{% endif %}</p>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" id="formDestinoAgente">
+    {% csrf_token %}
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="form-card">
+                <h2 class="section-title">Datos generales</h2>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ form.nombre.label }}</label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.tipo.label }}</label>
+                        {{ form.tipo }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.clima.label }}</label>
+                        {{ form.clima }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ form.ubicacion.label }}</label>
+                    {{ form.ubicacion }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                </div>
+
+                <div class="form-check form-switch mb-4">
+                    {{ form.esta_activo }}
+                    <label class="form-check-label" for="{{ form.esta_activo.id_for_label }}">Destino activo</label>
+                </div>
+
+                <h2 class="section-title mt-4">Galería</h2>
+
+                {% if form.instance.pk and form.instance.imagenes_galeria.exists %}
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <label class="form-label">Portada actual</label>
+                        <img src="{{ form.instance.imagenes_galeria.all.0.imagen.url }}" class="thumb w-100" style="height: 80px;" alt="">
+                    </div>
+                    <div class="col-sm-8">
+                        <label class="form-label">Fotos guardadas ({{ form.instance.imagenes_galeria.count }})</label>
+                        <div class="gallery">
+                            {% for img_dest in form.instance.imagenes_galeria.all %}
+                            <div class="foto-item card-foto-galeria" id="foto-wrapper-{{ img_dest.id }}">
+                                <img src="{{ img_dest.imagen.url }}" alt="">
+                                <div class="foto-actions opacity-actions">
+                                    <button type="button" class="foto-btn btn-hacer-portada"
+                                            data-url="{% url 'gestion:asignar_portada_destino' form.instance.id img_dest.id %}">Portada</button>
+                                    <button type="button" class="foto-btn foto-btn-danger btn-borrar-foto"
+                                            data-id="{{ img_dest.id }}"
+                                            data-url="{% url 'gestion:eliminar_foto_destino' img_dest.id %}">Eliminar</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <label class="form-label">{{ form.imagenes_multiples.label }}</label>
+                {{ form.imagenes_multiples }}
+                <div id="preview-container" class="gallery gallery-center mt-2">
+                    <span class="text-muted small" id="preview-placeholder">Las imágenes nuevas se mostrarán aquí</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="form-card">
+                <h2 class="section-title">Ubicación</h2>
+                <p class="section-hint">Busca un lugar o haz clic en el mapa para marcar la referencia del destino.</p>
+
+                <div class="d-flex gap-2 mb-3">
+                    <input type="text" id="inputBuscarDestino" class="form-control" placeholder="Buscar lugar">
+                    <button type="button" id="btnBuscarDestino" class="btn-ghost">Buscar</button>
+                </div>
+
+                <div id="mapaDestinoAgente" class="map-box mb-3"
+                     data-lat="{{ form.latitud.value|default:'' }}"
+                     data-lon="{{ form.longitud.value|default:'' }}"></div>
+
+                <div class="subpanel">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Latitud</label>
+                            {{ form.latitud }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Longitud</label>
+                            {{ form.longitud }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a href="{% url 'gestion:destino_list' %}" class="btn-ghost">Cancelar</a>
+        <button type="submit" class="btn-accent">Guardar destino</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/preview_images.js' %}"></script>
+<script src="{% static 'js/mapa_poi.js' %}"></script>
+<script src="{% static 'js/editar_galeria.js' %}"></script>
+<script>
+    window.dispatchEvent(new Event('resize'));
+    document.getElementById('inputBuscarDestino').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('btnBuscarDestino').click();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel de Gestión · SRTI{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% with p=request.path %}
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <span class="brand-name">SRTI</span>
+        <span class="brand-sub">Panel interno</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a class="nav-item-link" href="#">Inicio</a>
+
+        {% if user.is_superuser or user.is_staff %}
+        <div class="nav-group">Administración</div>
+        <a class="nav-item-link {% if '/usuarios/' in p %}active{% endif %}"
+           href="{% url 'gestion:lista_usuarios' %}">Usuarios</a>
+
+        <div class="nav-group">Catálogo</div>
+        <a class="nav-item-link {% if '/paquetes/' in p %}active{% endif %}"
+           href="{% url 'gestion:lista_paquetes' %}">Paquetes</a>
+        <a class="nav-item-link {% if '/destinos/' in p %}active{% endif %}"
+           href="{% url 'gestion:destino_list' %}">Destinos</a>
+        <a class="nav-item-link {% if '/rutas/' in p %}active{% endif %}"
+           href="{% url 'gestion:ruta_list' %}">Rutas</a>
+        <a class="nav-item-link {% if '/pois/' in p %}active{% endif %}"
+           href="{% url 'gestion:administrar_pois' %}">Puntos de interés</a>
+
+        <div class="nav-group">Alojamiento</div>
+        <a class="nav-item-link {% if '/hoteles/' in p and '/servicios/' not in p %}active{% endif %}"
+           href="{% url 'gestion:hotel_list' %}">Hoteles</a>
+        <a class="nav-item-link {% if '/servicios/' in p %}active{% endif %}"
+           href="{% url 'gestion:servicio_list' %}">Servicios de hotel</a>
+        <a class="nav-item-link {% if '/temporadas/' in p %}active{% endif %}"
+           href="{% url 'gestion:gestion_temporadas' %}">Temporadas</a>
+        {% endif %}
+
+        {% if user.is_superuser %}
+        <div class="nav-group">Operaciones</div>
+        <a class="nav-item-link" href="#">Validar reservas</a>
+        <a class="nav-item-link {% if '/moderacion/' in p %}active{% endif %}"
+           href="{% url 'gestion:bandeja_moderacion' %}">Cola de moderación</a>
+        {% endif %}
+    </nav>
+</aside>
+{% endwith %}
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="topbar-user">
+            <span class="user-name">{{ user.nombre }}</span>
+            <span class="user-role">
+                {% if user.is_superuser %}Administrador{% else %}Empleado{% endif %}
+            </span>
+        </div>
+        <form action="{% url 'authentication:logout' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">Cerrar sesión</button>
+        </form>
+    </header>
+
+    <main class="content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">&copy; SRTI-LP</footer>
+</div>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/leaflet.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

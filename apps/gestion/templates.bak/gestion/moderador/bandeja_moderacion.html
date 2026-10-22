@@ -1,0 +1,129 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2 class="h3 mb-0">🕵️‍♂️ Panel de Moderación Editorial</h2>
+        <span class="badge bg-dark fs-6">{{ pendientes.count }} Por Revisar</span>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% for poi in pendientes %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-light text-dark border-0 py-3">
+                        <div>
+                            <strong class="fs-5 text-dark">{{ poi.nombre }}</strong>
+                            <span class="ms-2 small text-muted">por: 👤 <strong>{{ poi.proponente.username }}</strong></span>
+                            <span class="badge bg-secondary ms-2">{{ poi.get_categoria_display }}</span>
+                        </div>
+                        <small class="text-muted">Recibido: {{ poi.fecha_propuesta|date:"d/m/Y H:i" }}</small>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <p class="mb-2 fw-bold text-secondary">📝 Descripción de la propuesta:</p>
+                                <p class="text-dark bg-white p-3 rounded border small mb-3" style="white-space: pre-line;">
+                                    {{ poi.descripcion }}
+                                </p>
+                                
+                                <p class="mb-1 fw-bold text-secondary">📍 Referencia de Ubicación:</p>
+                                <p class="text-muted small mb-0">{{ poi.referencia_ubicacion }}</p>
+                                
+                                {% if poi.latitud and poi.longitud %}
+                                    <div class="mt-2">
+                                        <span class="badge bg-dark-subtle text-dark border-0">
+                                            🗺️ Coordenadas: {{ poi.latitud|stringformat:".4f" }}, {{ poi.longitud|stringformat:".4f" }}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 text-center d-flex flex-column justify-content-center border-start">
+                                <p class="mb-2 small fw-bold text-secondary">📸 Imagen propuesta</p>
+                                
+                                {% if poi.imagen_archivo %}
+                                    <a href="{{ poi.imagen_archivo.url }}" target="_blank" title="Click para ver en tamaño completo">
+                                        <img src="{{ poi.imagen_archivo.url }}" 
+                                            class="img-fluid rounded shadow-sm border img-thumbnail" 
+                                            alt="Previsualización" 
+                                            style="max-height: 150px; width: 100%; object-fit: cover; cursor: zoom-in;">
+                                    </a>
+                                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">🔍 Click para ampliar</small>
+
+                                {% elif poi.imagen_url %}
+                                    <a href="{{ poi.imagen_url }}" target="_blank" title="Click para ver en tamaño completo">
+                                        <img src="{{ poi.imagen_url }}" 
+                                            class="img-fluid rounded shadow-sm border img-thumbnail" 
+                                            alt="Previsualización" 
+                                            style="max-height: 150px; width: 100%; object-fit: cover; cursor: zoom-in;">
+                                    </a>
+                                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">🔍 Click para ampliar</small>
+
+                                {% else %}
+                                    <div class="p-3 bg-light rounded border border-dashed text-muted small">
+                                        <span class="fs-3 d-block">🚫</span>
+                                        Sin foto adjunta
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white border-0 text-end pb-3">
+                        <button type="button" class="btn btn-outline-dark fw-bold btn-sm" data-bs-toggle="modal" data-bs-target="#modalModerar{{ poi.id }}">
+                            ⚙️ Revisar e Iniciar Moderación
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="modalModerar{{ poi.id }}" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-md modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-dark text-white">
+                                <h5 class="modal-title">Revisando: {{ poi.nombre }}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-focus="false" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <form action="{% url 'gestion:bandeja_moderacion' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="poi_id" value="{{ poi.id }}">
+
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="fw-bold small text-muted">Descripción del Turista:</label>
+                                        <p class="bg-light p-2 rounded small text-secondary">{{ poi.descripcion }}</p>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">💬 Feedback / Motivo de Regulación</label>
+                                        <textarea name="motivo_moderacion" class="form-control" rows="3" placeholder="Escribe aquí los cambios solicitados o la razón del rechazo..."></textarea>
+                                        <div class="form-text text-muted">Obligatorio si pides cambios o rechazas la joya.</div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer bg-light d-flex justify-content-between">
+                                    <div>
+                                        <button type="submit" name="estado" value="RECHAZADO" class="btn btn-danger">🔴 Rechazar</button>
+                                        <button type="submit" name="estado" value="CAMBIOS" class="btn btn-warning">🟠 Pedir Cambios</button>
+                                    </div>
+                                    <button type="submit" name="estado" value="APROBADO" class="btn btn-success fw-bold">🟢 Aprobar y Publicar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="card shadow-sm border-0 text-center py-5">
+                    <div class="card-body">
+                        <h3 class="text-muted mb-2">🎉 ¡Bandeja limpia!</h3>
+                        <p class="text-secondary my-0">No hay nuevas joyas ocultas pendientes de revisión por ahora.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

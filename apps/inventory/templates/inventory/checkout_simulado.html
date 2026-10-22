@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="row max-w-4xl mx-auto bg-white p-4 rounded shadow-sm border">
+        <div class="col-12 mb-4 border-bottom pb-3">
+            <h1 class="h3 text-dark fw-bold">💳 Confirmación de tu Viaje</h1>
+            <p class="text-muted mb-0">Verifica los datos de tu reserva antes de procesar el pago simulado.</p>
+        </div>
+
+        <div class="col-md-7 pe-md-4">
+            <h2 class="h5 fw-bold text-dark mb-3">📍 Resumen de Reserva</h2>
+            <div class="p-3 bg-light rounded mb-4 border">
+                <p class="mb-1"><strong>Paquete Seleccionado:</strong> {{ paquete.nombre }}</p>
+                <p class="mb-1"><strong>Duración:</strong> {{ paquete.duracion_dias }} días</p>
+                <p class="mb-0 text-success fw-bold">🎒 Reservando: {{ cantidad }} cupo(s)</p>
+            </div>
+            
+            <form method="POST" action="{% url 'inventory:procesar_compra_simulada' paquete.id %}" class="mb-4">
+                {% csrf_token %}
+                <input type="hidden" name="cantidad_cupos" value="{{ cantidad }}">
+                <label class="form-label small fw-bold text-secondary">🎟️ ¿Tienes un cupón de descuento?</label>
+                <div class="input-group">
+                    <input type="text" name="codigo_promocion" class="form-control text-uppercase" placeholder="Ej: PROMO10" value="{{ codigo_cupon }}">
+                    <button class="btn btn-dark fw-bold" type="submit">Aplicar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-5 bg-light p-4 rounded border">
+            <h2 class="h5 fw-bold text-dark mb-3">🧾 Desglose del Recibo</h2>
+            
+            <div class="d-flex justify-content-between mb-2 small text-secondary">
+                <span>Precio Unitario:</span>
+                <span>Bs{{ paquete.precio }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 small text-secondary">
+                <span>Cantidad:</span>
+                <span>x{{ cantidad }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 font-monospace text-secondary border-bottom pb-2">
+                <span>Subtotal:</span>
+                <span>Bs{{ subtotal }}</span>
+            </div>
+            
+            {% if descuento > 0 %}
+                <div class="d-flex justify-content-between mb-2 text-success small fw-bold">
+                    <span>📉 Descuento Cupón:</span>
+                    <span>-Bs{{ descuento }}</span>
+                </div>
+            {% endif %}
+            
+            <div class="d-flex justify-content-between align-items-center my-3 pt-2">
+                <span class="fw-bold text-dark fs-5">Total Neto:</span>
+                <span class="fw-bold text-dark fs-4 font-monospace">Bs{{ total_final }}</span>
+            </div>
+
+            <form method="POST" action="{% url 'inventory:procesar_compra_simulada' paquete.id %}" class="mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="cantidad_cupos" value="{{ cantidad }}">
+                <input type="hidden" name="codigo_promocion" value="{{ codigo_cupon }}">
+                
+                <button type="submit" name="confirmar_pago" class="btn btn-success w-100 fw-bold py-2.5 shadow-sm">
+                    🔒 Confirmar Pago Realizar Compra
+                </button>
+            </form>
+            
+            <a href="{% url 'inventory:explorar_paquetes' %}" class="btn btn-link w-100 text-center btn-sm mt-2 text-muted">
+                ❌ Cancelar y regresar
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

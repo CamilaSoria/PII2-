@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 text-dark fw-bold mb-1">❤️ Mis Joyas Guardadas</h1>
+            <p class="text-muted mb-0">Tu itinerario personal con los rincones más ocultos que planeas explorar.</p>
+        </div>
+        <a href="{% url 'authentication:feed_joyas_ocultas' %}" class="btn btn-outline-dark btn-sm fw-bold rounded-pill px-3">
+            🗺️ Seguir Explorando
+        </a>
+    </div>
+
+    {% csrf_token %}
+
+    <div class="row" id="contenedor-favoritos">
+        {% if favoritos %}
+            {% for poi in favoritos %}
+                <div class="col-md-6 col-lg-4 mb-4" id="tarjeta-fav-container-{{ poi.id }}">
+                    <div class="card h-100 shadow-sm border-0 position-relative">
+                        
+                        {% if poi.imagen_archivo %}
+                            <img src="{{ poi.imagen_archivo.url }}" class="card-img-top" alt="{{ poi.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% elif poi.imagen_url %}
+                            <img src="{{ poi.imagen_url }}" class="card-img-top" alt="{{ poi.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=600" class="card-img-top" alt="Viajes" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+
+                        <span class="badge bg-dark bg-opacity-70 text-white position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1.5 small backdrop-blur">
+                            {{ poi.get_categoria_display }}
+                        </span>
+
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h3 class="h5 card-title text-dark fw-bold mb-2">{{ poi.nombre }}</h3>
+                                <p class="card-text text-secondary small mb-3">{{ poi.descripcion|truncatewords:20 }}</p>
+                            </div>
+                            
+                            <div class="bg-light p-2 rounded mb-0 small text-muted">
+                                📍 {{ poi.referencia_ubicacion|truncatechars:45 }}
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white border-0 pb-3 text-end">
+                            <button type="button" 
+                                    class="btn btn-sm btn-danger btn-fav-toggle rounded-pill fw-semibold px-3 w-100"
+                                    data-poi-id="{{ poi.id }}"
+                                    data-url="{% url 'authentication:modificar_favorito_joya' poi.id %}"
+                                    id="btn-fav-{{ poi.id }}">
+                                ❤️ Guardado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="display-1 mb-3 text-muted">💔</div>
+                <h3 class="h4 text-dark fw-semibold">Aún no tienes joyas guardadas</h3>
+                <p class="text-muted mb-4">Explora el mapa del feed general y dale corazón a los lugares que te inspiren.</p>
+                <a href="{% url 'authentication:feed_joyas_ocultas' %}" class="btn btn-dark fw-bold px-4 py-2 rounded-pill shadow-sm">
+                    🎒 Descubrir Lugares Ahora
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="{% static 'js/favoritos.js' %}"></script>
+<script src="{% static 'js/controlador_favoritos.js' %}"></script>
+{% endblock %}

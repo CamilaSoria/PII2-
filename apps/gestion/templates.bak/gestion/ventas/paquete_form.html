@@ -1,0 +1,189 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            {% if form.instance.pk %}Editar paquete{% else %}Nuevo paquete{% endif %}
+        </h1>
+        <p class="page-subtitle">
+            {% if form.instance.pk %}{{ form.instance.nombre }}{% else %}Completa los datos comerciales, el destino y la cotización.{% endif %}
+        </p>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" id="formPaqueteAgente">
+    {% csrf_token %}
+
+    <div class="row g-4">
+        <!-- Columna izquierda -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <h2 class="section-title">Datos comerciales</h2>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ form.nombre.label }}</label>
+                    {{ form.nombre }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.categoria.label }}</label>
+                        {{ form.categoria }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.dificultad.label }}</label>
+                        {{ form.dificultad }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.duracion_dias.label }}</label>
+                        {{ form.duracion_dias }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.cupos_totales.label }}</label>
+                        {{ form.cupos_totales }}
+                    </div>
+                </div>
+
+                <div class="form-check form-switch mb-4">
+                    {{ form.esta_activo }}
+                    <label class="form-check-label" for="{{ form.esta_activo.id_for_label }}">
+                        Disponible para la venta
+                    </label>
+                </div>
+
+                <h2 class="section-title mt-4">Galería</h2>
+
+                {% if form.instance.pk and form.instance.imagenes_galeria.exists %}
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <label class="form-label">Portada actual</label>
+                        <img src="{{ form.instance.imagenes_galeria.all.0.imagen.url }}"
+                             class="thumb w-100" style="height: 80px;" alt="">
+                    </div>
+                    <div class="col-sm-8">
+                        <label class="form-label">
+                            Fotos guardadas ({{ form.instance.imagenes_galeria.count }})
+                        </label>
+                        <div class="gallery">
+                            {% for img_paq in form.instance.imagenes_galeria.all %}
+                            <div class="foto-item card-foto-galeria" id="foto-wrapper-{{ img_paq.id }}">
+                                <img src="{{ img_paq.imagen.url }}" alt="">
+                                <div class="foto-actions opacity-actions">
+                                    <button type="button" class="foto-btn btn-hacer-portada"
+                                            data-url="{% url 'inventory:asignar_portada_paquete' form.instance.id img_paq.id %}">
+                                        Portada
+                                    </button>
+                                    <button type="button" class="foto-btn foto-btn-danger btn-borrar-foto"
+                                            data-id="{{ img_paq.id }}"
+                                            data-url="{% url 'inventory:eliminar_foto_paquete' img_paq.id %}">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <label class="form-label">{{ form.imagenes_multiples.label }}</label>
+                {{ form.imagenes_multiples }}
+                <div id="preview-container" class="gallery gallery-center mt-2">
+                    <span class="text-muted small" id="preview-placeholder">Las imágenes nuevas se mostrarán aquí</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <h2 class="section-title">Destino y ruta</h2>
+                <p class="section-hint">
+                    El sistema hereda automáticamente las paradas y joyas ocultas de la ruta elegida.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ form.destino.label }}</label>
+                    {{ form.destino }}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">{{ form.ruta.label }}</label>
+                    {{ form.ruta }}
+                </div>
+
+                <h2 class="section-title mt-4">Cotización</h2>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.precio_base.label }}</label>
+                    {{ form.precio_base }}
+                </div>
+
+                <div class="subpanel">
+                    <h3 class="section-title">Hospedaje asignado</h3>
+                    <p class="section-hint">
+                        Habitaciones e inventario de hotel que cubre el costo base del paquete.
+                    </p>
+
+                    {{ hospedaje_formset.management_form }}
+                    <div id="formset-hospedaje-container">
+                        {% for form_hosp in hospedaje_formset %}
+                        <div class="row g-2 align-items-end mb-2 item-hospedaje">
+                            <div class="col-7">
+                                <label class="form-label small">Habitación / hotel</label>
+                                {{ form_hosp.habitacion }}
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label small">Cupos</label>
+                                {{ form_hosp.cupo_total }}
+                            </div>
+                            <div class="col-2 text-center pb-2">
+                                {% if hospedaje_formset.can_delete %}
+                                    <label class="small text-muted d-block">Borrar</label>
+                                    {{ form_hosp.DELETE }}
+                                {% endif %}
+                            </div>
+                            {{ form_hosp.id }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if form.instance.pk %}
+                <div class="price-total">
+                    <span class="text-muted small">Precio final dinámico</span>
+                    <span class="amount">${{ form.instance.precio_final }}</span>
+                </div>
+                <small class="text-muted d-block text-end mt-1">
+                    Según temporadas, promociones y hospedaje activo.
+                </small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a href="{% url 'gestion:lista_paquetes' %}" class="btn-ghost">Cancelar</a>
+        <button type="submit" class="btn-accent">Guardar paquete</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/preview_images.js' %}"></script>
+<script src="{% static 'js/editar_galeria.js' %}"></script>
+<script>
+    // Expone el token CSRF para las peticiones AJAX de editar_galeria.js
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (input) window.CSRF_TOKEN = input.value;
+    });
+</script>
+{% endblock %}

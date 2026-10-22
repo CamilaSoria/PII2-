@@ -1,0 +1,183 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Puntos de interés</h1>
+        <p class="page-subtitle">Inventario cartográfico base para armar rutas turísticas.</p>
+    </div>
+    <button type="button" class="btn-accent" data-bs-toggle="modal" data-bs-target="#modalCrearPoiAgente">
+        Registrar POI
+    </button>
+</div>
+
+<div class="modal fade" id="modalCrearPoiAgente" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="modalCrearPoiAgenteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCrearPoiAgenteLabel">Registrar punto de interés</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="formCrearPoiAgente">
+                    {% csrf_token %}
+
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="form-card">
+                                <h2 class="section-title">Datos generales</h2>
+
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.nombre.label }}</label>
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}<div class="field-error">{{ form.nombre.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.categoria.label }}</label>
+                                    {{ form.categoria }}
+                                    {% if form.categoria.errors %}<div class="field-error">{{ form.categoria.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.descripcion.label }}</label>
+                                    {{ form.descripcion }}
+                                    {% if form.descripcion.errors %}<div class="field-error">{{ form.descripcion.errors|striptags }}</div>{% endif %}
+                                </div>
+
+                                <h2 class="section-title mt-4">Galería</h2>
+                                <label class="form-label">{{ form.imagenes_multiples.label }}</label>
+                                {{ form.imagenes_multiples }}
+                                <div id="preview-container" class="gallery gallery-center mt-2">
+                                    <span class="text-muted small" id="preview-placeholder">Vista previa de la galería</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="form-card">
+                                <h2 class="section-title">Ubicación</h2>
+                                <p class="section-hint">
+                                    Busca una ubicación o haz clic en el mapa para capturar las coordenadas.
+                                </p>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <input type="text" id="inputBuscarAgente" class="form-control"
+                                           placeholder="Buscar lugar (ej. Valle de la Luna)">
+                                    <button type="button" id="btnBuscarAgente" class="btn-ghost">Buscar</button>
+                                </div>
+                                <div id="mapaCrearAgente" class="map-box mb-3"></div>
+
+                                <div class="subpanel">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label small">Latitud</label>
+                                            {{ form.latitud }}
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small">Longitud</label>
+                                            {{ form.longitud }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions mb-0">
+                        <button type="button" class="btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn-accent">Guardar POI</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4" style="width: 96px;">Imagen</th>
+                    <th>Atractivo</th>
+                    <th>Categoría</th>
+                    <th>Coordenadas</th>
+                    <th>Estado</th>
+                    <th class="text-end pe-4" style="width: 160px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for poi in pois %}
+                <tr>
+                    <td class="ps-4">
+                        {% if poi.imagen_archivo %}
+                            <img src="{{ poi.imagen_archivo.url }}" class="thumb" alt="">
+                        {% elif poi.imagen_url %}
+                            <img src="{{ poi.imagen_url }}" class="thumb" alt="">
+                        {% else %}
+                            <div class="thumb thumb-empty">Sin foto</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="cell-title">{{ poi.nombre }}</div>
+                        <div class="cell-desc text-truncate">{{ poi.descripcion|truncatechars:60 }}</div>
+                    </td>
+                    <td><span class="tag">{{ poi.get_categoria_display }}</span></td>
+                    <td>
+                        {% if poi.latitud and poi.longitud %}
+                            <span class="coords">{{ poi.latitud|slice:":8" }}, {{ poi.longitud|slice:":8" }}</span>
+                        {% else %}
+                            <span class="pill pill-off">Sin georreferencia</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="pill {% if poi.estado == 'APROBADO' %}pill-on{% elif poi.estado == 'PENDIENTE' %}pill-warn{% else %}pill-off{% endif %}">
+                            {{ poi.get_estado_display }}
+                        </span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'gestion:editar_poi' poi.id %}" class="btn-row">Editar</a>
+                            <form action="{% url 'gestion:eliminar_poi' poi.id %}" method="post" class="m-0"
+                                  onsubmit="return confirm('¿Eliminar este POI del mapa base? Esta acción es permanente.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-row btn-row-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <strong>No hay puntos de interés registrados</strong>
+                            <span class="small">Los POI que registres aquí se usarán para trazar rutas.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/mapa_poi.js' %}"></script>
+<script src="{% static 'js/preview_images.js' %}"></script>
+<script>
+    document.getElementById('modalCrearPoiAgente').addEventListener('shown.bs.modal', function () {
+        window.dispatchEvent(new Event('resize'));
+    });
+    document.getElementById('inputBuscarAgente').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('btnBuscarAgente').click();
+        }
+    });
+</script>
+{% endblock %}
